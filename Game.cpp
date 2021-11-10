@@ -2,20 +2,23 @@
 #include "Game.h"
 #include <stdio.h>
 //#include <stdio.h>
-#include <Windows.h>
-
 
 
 
 void strokeCleaning() {
 	for (int i = 0; i < count_of_cell; i++) {
 
-		int x = cell[i][1];
-		int y = cell[i][0];
 		if (i == 0) {
 			field[y][x] %= 30;
 		}
 		else field[y][x] = 0;
+	}
+}
+
+void cleaningOfCell() {
+	for (int i = 0; i <= count_of_cell; i++) {
+		cell[i][0] = 0;
+		cell[i][1] = 0;
 	}
 }
 
@@ -273,11 +276,15 @@ void clicking(int flag) {
 		count_of_cell++;
 		cell[count_of_cell][0] = y;
 		cell[count_of_cell][1] = x;
+
+		int checkk_ = cell[count_of_cell][0] + cell[count_of_cell - 1][0];
+		int checkk1_ = cell[count_of_cell][1] + cell[count_of_cell - 1][1];
+
 		int Ykletka_of_enemy = abs(cell[count_of_cell][0] + cell[count_of_cell - 1][0]) / 2;
 		int Xkletka_of_enemy = abs(cell[count_of_cell][1] + cell[count_of_cell - 1][1]) / 2;
 		int* location_of_enemy = &field[Ykletka_of_enemy][Xkletka_of_enemy];
 
-		if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (field[y][x] == 0) && *location_of_enemy != 0) {
+		if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (field[y][x] == 0) && *location_of_enemy != 0 && checkk_ % 2 == 0 && checkk1_ % 2 == 0) {
 			field[y][x] = 44;
 		}
 		else count_of_cell--;
