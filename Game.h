@@ -10,7 +10,9 @@ void strokeCleaning();
 void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam);
 void rightClickingForTheSecondWindow(HDC hdc, LPARAM lParam);
 void FirstWindow(HDC hdc);
+void movement(bool flag);
 
+extern bool znak;
 extern int field[8][8];
 extern int cell[20][2];
 extern int click[2][2];

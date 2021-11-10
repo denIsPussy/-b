@@ -17,14 +17,14 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса глав�
 HDC hdc;
 
 
-int window = 1;
-
+int window = 2;
 int numberPlayer = 1; // номер игрока, который ходит в данный момент
 int NumberOfFallenWhiteCheckers = 0;
 int NumberOfFallenBlackCheckers = 0;
 int count_of_cell = 0;
 int count = 0;
 
+bool znak = true;
 bool flag = true; // flag обозначает разрешение выделять шашку
 
 int click[2][2] = {

@@ -3,7 +3,37 @@
 #include <stdio.h>
 //#include <stdio.h>
 
+void movement(bool flag) {
+	
+	int rightwardMove, leftwardMove;
 
+	
+	if (!flag) {
+		if (count_of_click == 1) {
+			if (y >= 0) {
+				if (x > 0 && x < 7) {
+					if (field[y - 1][x - 1] == 0) field[y - 1][x - 1] = 55;
+					if (field[y - 1][x + 1] == 0) field[y - 1][x + 1] = 55;
+
+				}
+				else if (x > 0) {
+					if (field[y - 1][x - 1] == 0) field[y - 1][x - 1] = 55;
+				}
+				if (x < 7) {
+					if (field[y - 1][x + 1] == 0) field[y - 1][x + 1] = 55;
+				}
+			}
+		}
+	}
+
+	if (flag) {
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				if (field[i][j] == 55) field[i][j] = 0;
+			}
+		}
+	}
+}
 
 void strokeCleaning() {
 	for (int i = 0; i < count_of_cell; i++) {
@@ -26,6 +56,7 @@ void cleaningOfCell() {
 
 void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
+
 	if (count_of_cell <= 0) {
 		cell[count_of_click][0] = y;
 		cell[count_of_click][1] = x;
@@ -38,6 +69,8 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 		count_of_click++;
 	}
 
+	movement(false);
+
 	if (count_of_click == 2 && count_of_cell <= 0) {
 		clicking(1);
 	}
@@ -47,6 +80,7 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 		else strokeCleaning();
 		count_of_cell = 0;
 		count_of_click = 0;
+		cleaningOfCell();
 	}
 	else if (count_of_click == 1 && field[y][x] != 0) field[y][x] += 30;
 
@@ -78,20 +112,24 @@ void normal_course() {
 
 void shading_the_checkers(HDC hdc, int j, int i) {
 
-	HBRUSH cell_first_player, cell_second_player, H_selected_cells;
+	HBRUSH cell_first_player, cell_second_player, H_selected_cells, white_cage, black_cage;
 
 	cell_first_player = CreateSolidBrush(RGB(33, 33, 33)); // цвет шашки первого игрока
 	cell_second_player = CreateSolidBrush(RGB(231, 231, 231)); // цвет шашки второго игрока
 	H_selected_cells = CreateSolidBrush(RGB(205, 133, 63)); // цвет оконтовки шашки при многократном ходе
 	//RGB(15, 46, 66)
+	white_cage = CreateSolidBrush(RGB(231, 187, 154));
+	black_cage = CreateSolidBrush(RGB(126, 56, 3));
 
 
-	HPEN stroke_first_player_cell, stroke_second_player_cell, selected_cells, green_cell;
+	HPEN stroke_first_player_cell, stroke_second_player_cell, selected_cells, green_cell, strokeCell;
 
+	strokeCell = CreatePen(PS_SOLID, 8, RGB(254, 194, 57));
 	selected_cells = CreatePen(PS_SOLID, 8, RGB(205, 133, 63)); // цвет шашки при многократном ходе
 	green_cell = CreatePen(PS_SOLID, 8, RGB(0, 255, 0)); // цвет выделенной ячейки
 	stroke_first_player_cell = CreatePen(PS_SOLID, 8, RGB(0, 0, 0)); // цвет оконтовки шашки первого игрока
 	stroke_second_player_cell = CreatePen(PS_SOLID, 8, RGB(255, 255, 255)); // цвет оконтовки шашки второго игрока
+
 
 	int cx = (i + 1) * 100 - 50;
 	int cy = (j + 1) * 100 - 50;
@@ -127,6 +165,11 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 	}
+	if (field[j][i] == 55) { 
+		SelectObject(hdc, strokeCell);
+		SelectObject(hdc, black_cage);
+		Rectangle(hdc, cx - 46, cy - 46, cx + 48, cy + 48);
+	}
 
 	DeleteObject(cell_first_player);
 	DeleteObject(cell_second_player);
@@ -135,6 +178,9 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 	DeleteObject(green_cell);
 	DeleteObject(stroke_first_player_cell);
 	DeleteObject(stroke_second_player_cell);
+	DeleteObject(strokeCell);
+	DeleteObject(white_cage);
+	DeleteObject(black_cage);
 };
 
 
@@ -252,15 +298,29 @@ void clicking(int flag) {
 	int* first_clicking = &field[cell[0][0]][cell[0][1]];
 	int* second_clicking = &field[cell[1][0]][cell[1][1]];
 
+	if (*second_clicking == 55 || (*second_clicking == *first_clicking && cell[0][0] != cell[1][0] && cell[0][1] != cell[1][1])) {
+		*second_clicking = (*first_clicking % 30);
+		movement(true);
+		*first_clicking = 0;
+		cleaningOfCell();
+		count_of_cell = 0;
+		count_of_click = 0;
+		Turning_the_board();
+		return;
+	}
 	if (flag == 1) {
 		if (*first_clicking == *second_clicking) {
 			*first_clicking %= 30;
 			*second_clicking %= 30;
 			count_of_click = 0;
+			cleaningOfCell();
+			movement(true);
 		}
 		else if (*second_clicking == 0) {
 			count_of_click = 0;
 			*first_clicking %= 30;
+			cleaningOfCell();
+			movement(true);
 		}
 		else {
 			*first_clicking %= 30;
@@ -268,6 +328,7 @@ void clicking(int flag) {
 			cell[0][0] = cell[1][0];
 			cell[0][1] = cell[1][1];
 			count_of_click = 1;
+			movement(true);
 		}
 
 	}
@@ -318,7 +379,8 @@ void clicking(int flag) {
 		else NumberOfFallenWhiteCheckers += (count_of_cell - 1);
 		if (numberPlayer == 1) numberPlayer = 2;
 		else numberPlayer = 1;
-		//Turning_the_board();
+		movement(true);
+		Turning_the_board();
 	}
 
 }
