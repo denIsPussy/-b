@@ -55,34 +55,38 @@ void cleaningOfCell() {
 
 
 void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
-
 	
-	if (count_of_cell <= 0) {
-		cell[count_of_click][0] = y;
-		cell[count_of_click][1] = x;
-		count_of_click++;
+	int timeVariable;
+	int yOfpreviousСell = cell[count_of_cell - 1][0];
+	int xOfpreviousСell = cell[count_of_cell - 1][1];
+	int *currentCell = &field[y][x];
+
+	if (count_of_cell == 0) {
+		timeVariable = 0;
 	}
 	else {
-		count_of_cell++;
-		cell[count_of_cell][0] = y;
-		cell[count_of_cell][1] = x;
-		count_of_click++;
+		timeVariable = count_of_cell;
 	}
+
+	cell[timeVariable][0] = y;
+	cell[timeVariable][1] = x;
+	count_of_click++;
 
 	movement(false);
 
-	if (count_of_click == 2 && count_of_cell <= 0) {
-		clicking(1);
-	}
-	else if (count_of_click == 2 && count_of_cell > 0) {
+	if (count_of_click == 2) {
 
-		if (y == cell[count_of_cell - 1][0] && x == cell[count_of_cell - 1][1]) clicking(3);
-		else strokeCleaning();
-		count_of_cell = 0;
-		count_of_click = 0;
-		cleaningOfCell();
+		if (count_of_cell == 0) clicking(1);
+		else 
+		{
+			if (y == yOfpreviousСell && x == xOfpreviousСell) clicking(3);
+			else strokeCleaning();
+			count_of_cell = 0;
+			count_of_click = 0;
+			cleaningOfCell();
+		}
 	}
-	else if (count_of_click == 1 && field[y][x] != 0) field[y][x] += 30;
+	else if (count_of_click == 1 && *currentCell != 0) *currentCell += 30;
 
 }
 
@@ -302,18 +306,66 @@ bool checking_cell(int x, int y) {
 	return false;
 }
 
-
 void clicking(int flag) {
 
 
+	// Переменная-флаг для действий с шашками
+	//////////////////////////////
+	int flag1_ = false;
+	//////////////////////////////
+
+
+	// Переменные для проверки четности клетки врага
+	////////////////////////////////
+	int checkk_ = cell[count_of_cell][0] + cell[count_of_cell - 1][0];
+	int checkk1_ = cell[count_of_cell][1] + cell[count_of_cell - 1][1];
+	////////////////////////////////
+
+
+
+	// Клетка, которую едим
+	///////////////////////////////
+	int Ykletka_of_enemy = abs(cell[count_of_cell][0] + cell[count_of_cell - 1][0]) / 2;
+	int Xkletka_of_enemy = abs(cell[count_of_cell][1] + cell[count_of_cell - 1][1]) / 2;
+
+	int* location_of_enemy = &field[Ykletka_of_enemy][Xkletka_of_enemy];
+	//////////////////////////////
+
+
+
+	// Самая первая ячейка
+	///////////////////////////////
+	int Xstarting_cell = cell[0][1];
+	int Ystarting_cell = cell[0][0];
+
 	int* first_clicking = &field[cell[0][0]][cell[0][1]];
+	//////////////////////////////
+
+
+
+	// Вторая ячейка
+	/////////////////////////////
 	int* second_clicking = &field[cell[1][0]][cell[1][1]];
+	/////////////////////////////
 
-	if (*second_clicking == 55 || (*second_clicking == *first_clicking && (cell[0][0] != cell[1][0] || cell[0][1] != cell[1][1]))) {
+
+
+	// Самая последняя ячейка
+	/////////////////////////////
+	int Xfinal_cell = cell[count_of_cell - 1][1];
+	int Yfinal_cell = cell[count_of_cell - 1][0];
+
+	int* final_cell = &field[Yfinal_cell][Xfinal_cell]; 
+	/////////////////////////////
+	//  || (*second_clicking == *first_clicking && (cell[0][0] != cell[1][0] || cell[0][1] != cell[1][1]))
+	if (*second_clicking == 55) {
+		
+		// Передвигаем шашку вперед
+		//////////
 		*second_clicking = (*first_clicking % 30);
-
 		movement(true);
 		*first_clicking = 0;
+		//////////
 		cleaningOfCell();
 		count_of_cell = 0;
 		count_of_click = 0;
@@ -344,12 +396,16 @@ void clicking(int flag) {
 				cell[0][0] = cell[1][0];
 				cell[0][1] = cell[1][1];
 				count_of_click = 1;
+				count_of_cell = 1;
 				movement(false);
 			}
 			else {
-				//cleaningOfCell();
-				count_of_click = 1;
+				cleaningOfCell();
+				*first_clicking %= 30;
+				//movement(false);
+				count_of_click = 0;
 			}
+			movement(false);
 			
 		}
 
@@ -360,13 +416,6 @@ void clicking(int flag) {
 		cell[count_of_cell][0] = y;
 		cell[count_of_cell][1] = x;
 
-		int checkk_ = cell[count_of_cell][0] + cell[count_of_cell - 1][0];
-		int checkk1_ = cell[count_of_cell][1] + cell[count_of_cell - 1][1];
-
-		int Ykletka_of_enemy = abs(cell[count_of_cell][0] + cell[count_of_cell - 1][0]) / 2;
-		int Xkletka_of_enemy = abs(cell[count_of_cell][1] + cell[count_of_cell - 1][1]) / 2;
-		int* location_of_enemy = &field[Ykletka_of_enemy][Xkletka_of_enemy];
-
 		if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (field[y][x] == 0) && *location_of_enemy != 0 && checkk_ % 2 == 0 && checkk1_ % 2 == 0) {
 			field[y][x] = 44;
 		}
@@ -374,14 +423,7 @@ void clicking(int flag) {
 	}
 	if (flag == 3)
 	{
-		int Xstarting_cell = cell[0][1];
-		int Ystarting_cell = cell[0][0];
-		int* starting_cell = &field[Ystarting_cell][Xstarting_cell];
-
-
-		int Xfinal_cell = cell[count_of_cell - 1][1];
-		int Yfinal_cell = cell[count_of_cell - 1][0];
-		int* final_cell = &field[Yfinal_cell][Xfinal_cell];
+		
 		for (int i = 1; i <= count_of_cell - 1; i++) {
 
 			int x = cell[i][1];
@@ -395,8 +437,8 @@ void clicking(int flag) {
 			}
 		}
 
-		*final_cell = *starting_cell % 30;
-		*starting_cell = 0;
+		*final_cell = *first_clicking % 30;
+		*first_clicking = 0;
 		if (numberPlayer == 1) NumberOfFallenBlackCheckers += (count_of_cell - 1);
 		else NumberOfFallenWhiteCheckers += (count_of_cell - 1);
 		if (numberPlayer == 1) numberPlayer = 2;
@@ -406,3 +448,4 @@ void clicking(int flag) {
 	}
 
 }
+
