@@ -9,7 +9,7 @@ void movement(bool flag) {
 
 	
 	if (!flag) {
-		if (count_of_click == 1) {
+		if (count_of_click == 1 || count_of_click == 2) {
 			if (y >= 0) {
 				if (x > 0 && x < 7) {
 					if (field[y - 1][x - 1] == 0) field[y - 1][x - 1] = 55;
@@ -56,7 +56,7 @@ void cleaningOfCell() {
 
 void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
-
+	
 	if (count_of_cell <= 0) {
 		cell[count_of_click][0] = y;
 		cell[count_of_click][1] = x;
@@ -184,7 +184,7 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 };
 
 
-void SecondWindow(HDC hdc, int numberPlayer) { // отрисовка игрового поля в целом
+void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 
 	HBRUSH cell_first_player_cell, cell_second_player_cell, white_cage, black_cage;
 
@@ -267,6 +267,17 @@ void SecondWindow(HDC hdc, int numberPlayer) { // отрисовка игрового поля в цело
 	OemToChar(nNumberOfFallenBlackCheckers, tNumberOfFallenBlackCheckers);
 	TextOut(hdc, 1120, 70, (LPCWSTR)tNumberOfFallenBlackCheckers, _tcslen(tNumberOfFallenBlackCheckers));
 
+
+	TCHAR string3[] = _T("Игрок, который сейчас ходит: ");
+	TextOut(hdc, 900, 90, (LPCWSTR)string3, _tcslen(string3));
+	char nnumberPlayer[5];
+	TCHAR  tnumberPlayer[5];
+	sprintf(nnumberPlayer, "%d", numberPlayer);
+	OemToChar(nnumberPlayer, tnumberPlayer);
+	TextOut(hdc, 1180, 90, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
+
+
+
 };
 
 void Turning_the_board() {
@@ -298,14 +309,17 @@ void clicking(int flag) {
 	int* first_clicking = &field[cell[0][0]][cell[0][1]];
 	int* second_clicking = &field[cell[1][0]][cell[1][1]];
 
-	if (*second_clicking == 55 || (*second_clicking == *first_clicking && cell[0][0] != cell[1][0] && cell[0][1] != cell[1][1])) {
+	if (*second_clicking == 55 || (*second_clicking == *first_clicking && (cell[0][0] != cell[1][0] || cell[0][1] != cell[1][1]))) {
 		*second_clicking = (*first_clicking % 30);
+
 		movement(true);
 		*first_clicking = 0;
 		cleaningOfCell();
 		count_of_cell = 0;
 		count_of_click = 0;
 		Turning_the_board();
+		if (numberPlayer == 1) numberPlayer = 2;
+		else if (numberPlayer == 2) numberPlayer = 1;
 		return;
 	}
 	if (flag == 1) {
@@ -323,12 +337,20 @@ void clicking(int flag) {
 			movement(true);
 		}
 		else {
-			*first_clicking %= 30;
-			*second_clicking += 30;
-			cell[0][0] = cell[1][0];
-			cell[0][1] = cell[1][1];
-			count_of_click = 1;
 			movement(true);
+			if (*second_clicking == (*first_clicking % 30)) {
+				*first_clicking %= 30;
+				*second_clicking += 30;
+				cell[0][0] = cell[1][0];
+				cell[0][1] = cell[1][1];
+				count_of_click = 1;
+				movement(false);
+			}
+			else {
+				//cleaningOfCell();
+				count_of_click = 1;
+			}
+			
 		}
 
 	}
@@ -378,7 +400,7 @@ void clicking(int flag) {
 		if (numberPlayer == 1) NumberOfFallenBlackCheckers += (count_of_cell - 1);
 		else NumberOfFallenWhiteCheckers += (count_of_cell - 1);
 		if (numberPlayer == 1) numberPlayer = 2;
-		else numberPlayer = 1;
+		else if (numberPlayer == 2) numberPlayer = 1;
 		movement(true);
 		Turning_the_board();
 	}

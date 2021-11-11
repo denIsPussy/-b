@@ -18,7 +18,7 @@ HDC hdc;
 
 
 int window = 2;
-int numberPlayer = 1; // номер игрока, который ходит в данный момент
+int numberPlayer = 2; // номер игрока, который ходит в данный момент
 int NumberOfFallenWhiteCheckers = 0;
 int NumberOfFallenBlackCheckers = 0;
 int count_of_cell = 0;
@@ -220,7 +220,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PAINTSTRUCT ps;
         hdc = BeginPaint(hWnd, &ps);
 
-        if (window == 2) SecondWindow(hdc, 0);
+        if (window == 2) SecondWindow(hdc);
         else if (window == 1) FirstWindow(hdc);
 
         EndPaint(hWnd, &ps);
@@ -231,8 +231,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         x = LOWORD(lParam) / 100; 
         y = HIWORD(lParam) / 100; 
 
-        if (x < 8 && x >= 0 && y < 8 && y >= 0) leftClickingForTheSecondWindow(hdc, lParam);
-
+        if (count_of_click == 0) {
+            if (x < 8 && x >= 0 && y < 8 && y >= 0 && numberPlayer == field[y][x]) leftClickingForTheSecondWindow(hdc, lParam);
+        }
+        else {
+            if (x < 8 && x >= 0 && y < 8 && y >= 0) leftClickingForTheSecondWindow(hdc, lParam);
+        }
         InvalidateRect(hWnd, NULL, TRUE);
         break;
     case WM_RBUTTONDOWN:
@@ -240,7 +244,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         x = LOWORD(lParam) / 100;
         y = HIWORD(lParam) / 100;
         
-        if (x < 8 && x >= 0 && y < 8 && y >= 0) rightClickingForTheSecondWindow(hdc, lParam);
+        if (x < 8 && x >= 0 && y < 8 && y >= 0 && numberPlayer == field[y][x] && count_of_click == 0) rightClickingForTheSecondWindow(hdc, lParam);
 
         InvalidateRect(hWnd, NULL, TRUE);
         break;

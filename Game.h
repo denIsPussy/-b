@@ -1,7 +1,7 @@
 #pragma once
 #include "framework.h"
 
-void SecondWindow(HDC hdc, int numberPlayer);
+void SecondWindow(HDC hdc);
 void shading_the_checkers(HDC hdc, int j, int i);
 void Turning_the_board();
 void clicking(int flag);
