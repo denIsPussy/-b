@@ -11,6 +11,7 @@ void movement(bool flag);
 int countOf(int number); 
 bool poedanie();
 void minusChecker(bool flag);
+void moveCancellation();
 
 extern int hod[2];
 extern int field[8][8];
@@ -19,5 +20,7 @@ extern bool flag;
 extern int* location_of_enemy;
 extern int numberPlayer;
 extern int steps;
+extern int statusOfGame;
 extern int NumberOfFallenWhiteCheckers;
 extern int NumberOfFallenBlackCheckers;
+extern int window;

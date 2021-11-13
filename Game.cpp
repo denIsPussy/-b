@@ -36,6 +36,18 @@ void movement(bool flag) {
 }
 
 
+void moveCancellation() {
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			if (field[i][j] == 44) field[i][j] = 0;
+			if (field[i][j] == 33) {
+				if (numberPlayer == 1) field[i][j] = 2;
+				else field[i][j] = 1;
+			}
+		}
+	}
+}
+
 
 void minusChecker(bool flag) {
 
@@ -54,6 +66,7 @@ void minusChecker(bool flag) {
 	}
 }
 
+
 bool poedanie() {
 
 	int Ykletka_of_enemy = abs(y + hod[0]) / 2;
@@ -68,7 +81,6 @@ bool poedanie() {
 }
 
 
-
 int countOf(int number) {
 	int count = 0;
 	for (int i = 0; i < 8; i++) {
@@ -78,6 +90,7 @@ int countOf(int number) {
 	}
 	return count;
 }
+
 
 void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
@@ -101,7 +114,11 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 		minusChecker(true);
 		if (numberPlayer == 1) numberPlayer = 2;
 		else numberPlayer = 1;
-		Turning_the_board();
+		if (statusOfGame == 0) Turning_the_board();
+		else {
+			statusOfGame = 1;
+			window = 3;
+		}
 		movement(true);
 	}
 	else if (*currentCell == 55) {
@@ -115,7 +132,7 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 	else
 	{
 		field[hod[0]][hod[1]] %= 30;
-		minusChecker(false);
+		moveCancellation();
 		movement(true);
 	}
 
@@ -136,9 +153,10 @@ void rightClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 	field[y][x] = 44;
 	*location_of_enemy = 33;
 	}
-
+	else {
+		field[hod[0]][hod[1]] %= 30;
+	}
 }
-
 
 
 void shading_the_checkers(HDC hdc, int j, int i) {
@@ -317,6 +335,7 @@ void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 
 
 };
+
 
 void Turning_the_board() {
 	int end = 7;

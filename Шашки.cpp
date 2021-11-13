@@ -16,9 +16,10 @@ WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки за�
 WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
 HDC hdc;
 
+int statusOfGame = 0; // 0 - игра идет, 1 - игра закончилась
 int* location_of_enemy;
 int hod[2];
-int window = 2;
+int window = 2; // 1 - главное меню, 2 - сама игра, 3 - окно об окончании игры
 int numberPlayer = 1; // номер игрока, который ходит в данный момент
 int NumberOfFallenWhiteCheckers = 0;
 int NumberOfFallenBlackCheckers = 0;
@@ -202,25 +203,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
     case WM_LBUTTONDOWN:
         
-        hod[0] = y;
-        hod[1] = x;
+        if (statusOfGame == 0)
+        {
+            hod[0] = y;
+            hod[1] = x;
 
-        x = LOWORD(lParam) / 100; 
-        y = HIWORD(lParam) / 100; 
+            x = LOWORD(lParam) / 100;
+            y = HIWORD(lParam) / 100;
 
-        if (x < 8 && x >= 0 && y < 8 && y >= 0) leftClickingForTheSecondWindow(hdc, lParam);
+            if (x < 8 && x >= 0 && y < 8 && y >= 0) leftClickingForTheSecondWindow(hdc, lParam);
+        }
         
         InvalidateRect(hWnd, NULL, TRUE);
         break;
     case WM_RBUTTONDOWN:
+        movement(true);
 
-        hod[0] = y;
-        hod[1] = x;
+        if (statusOfGame == 0)
+        {
+            hod[0] = y;
+            hod[1] = x;
 
-        x = LOWORD(lParam) / 100;
-        y = HIWORD(lParam) / 100;
-        
-        if (x < 8 && x >= 0 && y < 8 && y >= 0) rightClickingForTheSecondWindow(hdc, lParam);
+            x = LOWORD(lParam) / 100;
+            y = HIWORD(lParam) / 100;
+
+            if (x < 8 && x >= 0 && y < 8 && y >= 0) rightClickingForTheSecondWindow(hdc, lParam);
+        }
 
         InvalidateRect(hWnd, NULL, TRUE);
         break;
