@@ -16,58 +16,32 @@ WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки за�
 WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
 HDC hdc;
 
-
+int* location_of_enemy;
+int hod[2];
 int window = 2;
-int numberPlayer = 2; // номер игрока, который ходит в данный момент
+int numberPlayer = 1; // номер игрока, который ходит в данный момент
 int NumberOfFallenWhiteCheckers = 0;
 int NumberOfFallenBlackCheckers = 0;
-int count_of_cell = 0;
 int count = 0;
 
-bool znak = true;
+//bool znak = true;
 bool flag = true; // flag обозначает разрешение выделять шашку
 
-int click[2][2] = {
-    {0, 0},
-    {0, 0},
-};
-int count_of_click = 0;
 
-int x, y; // координаты нажатия
+int x = 0; 
+int y = 0; // координаты нажатия
 
 int field[8][8] = {                 // игровое поле
-   {0, 1, 0, 1, 0, 1, 0, 1},
-   {1, 0, 1, 0, 0, 0, 1, 0},
-   {0, 1, 0, 1, 0, 1, 0, 1},
-   {0, 0, 0, 0, 0, 0, 0, 0},
-   {0, 0, 0, 1, 0, 0, 0, 2},
-   {2, 0, 2, 0, 2, 0, 2, 0},
    {0, 2, 0, 2, 0, 2, 0, 2},
-   {2, 0, 2, 0, 2, 0, 2, 0}
+   {2, 0, 2, 0, 0, 0, 2, 0},
+   {0, 2, 0, 2, 0, 2, 0, 2},
+   {0, 0, 0, 0, 0, 0, 0, 0},
+   {0, 0, 0, 2, 0, 0, 0, 2},
+   {1, 0, 1, 0, 1, 0, 1, 0},
+   {0, 1, 0, 1, 0, 1, 0, 1},
+   {1, 0, 1, 0, 1, 0, 1, 0}
 };
 
-int cell[20][2] = {
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-    {0, 0},
-};
 // Отправить объявления функций, включенных в этот модуль кода:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -227,24 +201,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
     case WM_LBUTTONDOWN:
+        
+        hod[0] = y;
+        hod[1] = x;
 
         x = LOWORD(lParam) / 100; 
         y = HIWORD(lParam) / 100; 
 
-        if (count_of_click == 0) {
-            if (x < 8 && x >= 0 && y < 8 && y >= 0 && numberPlayer == field[y][x]) leftClickingForTheSecondWindow(hdc, lParam);
-        }
-        else {
-            if (x < 8 && x >= 0 && y < 8 && y >= 0) leftClickingForTheSecondWindow(hdc, lParam);
-        }
+        if (x < 8 && x >= 0 && y < 8 && y >= 0) leftClickingForTheSecondWindow(hdc, lParam);
+        
         InvalidateRect(hWnd, NULL, TRUE);
         break;
     case WM_RBUTTONDOWN:
 
+        hod[0] = y;
+        hod[1] = x;
+
         x = LOWORD(lParam) / 100;
         y = HIWORD(lParam) / 100;
         
-        if (x < 8 && x >= 0 && y < 8 && y >= 0 && numberPlayer == field[y][x] && count_of_click == 0) rightClickingForTheSecondWindow(hdc, lParam);
+        if (x < 8 && x >= 0 && y < 8 && y >= 0) rightClickingForTheSecondWindow(hdc, lParam);
 
         InvalidateRect(hWnd, NULL, TRUE);
         break;
