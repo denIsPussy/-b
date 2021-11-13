@@ -36,13 +36,17 @@ void movement(bool flag) {
 }
 
 
-void moveCancellation() {
+void moveCancellation(bool flag) {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (field[i][j] == 44) field[i][j] = 0;
 			if (field[i][j] == 33) {
 				if (numberPlayer == 1) field[i][j] = 2;
 				else field[i][j] = 1;
+			}
+			if (flag && field[i][j] == (numberPlayer + 30)) {
+				field[i][j] = (field[i][j] % 30);
+				flag = false;
 			}
 		}
 	}

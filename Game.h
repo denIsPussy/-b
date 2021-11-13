@@ -11,7 +11,7 @@ void movement(bool flag);
 int countOf(int number); 
 bool poedanie();
 void minusChecker(bool flag);
-void moveCancellation();
+void moveCancellation(bool flag);
 
 extern int hod[2];
 extern int field[8][8];
