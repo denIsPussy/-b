@@ -24,3 +24,4 @@ extern int statusOfGame;
 extern int NumberOfFallenWhiteCheckers;
 extern int NumberOfFallenBlackCheckers;
 extern int window;
+extern int endOfGame();

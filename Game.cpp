@@ -3,6 +3,22 @@
 #include <stdio.h>
 //#include <stdio.h>
 
+// 0 - пустая клетка
+// 1 - белая шашка
+// 2 - черная шашка
+// 31 - выделенная белая
+// 32 - выделенная черная
+// 33 - клетка врага, которая будет съедена при окончании хода игрока
+// 44 - клетки, по которым пройдет наша шашка 
+// 55 - клетки, которые предлагаются для хода при выборе шашки
+// 999 - королева
+
+void Crown(int ttbb) {
+	RECT g = {
+		
+	};
+}
+
 void movement(bool flag) {
 	
 	int rightwardMove, leftwardMove;
@@ -10,10 +26,14 @@ void movement(bool flag) {
 	
 	if (!flag) {
 		if (true) {
-			if (y >= 0) {
+			if (y > 0) {
 				if (x > 0 && x < 7) {
 					if (field[y - 1][x - 1] == 0) field[y - 1][x - 1] = 55;
 					if (field[y - 1][x + 1] == 0) field[y - 1][x + 1] = 55;
+					if (x > 1 && x < 6 && y > 1 && y < 6) {
+						if (field[y - 1][x + 1] == 1 || field[y - 1][x + 1] == 2) field[y - 2][x + 2] = 55;
+						if (field[y - 1][x - 1] == 1 || field[y - 1][x - 1] == 2) field[y - 2][x - 2] = 55;
+					}
 
 				}
 				else if (x > 0) {
@@ -35,7 +55,7 @@ void movement(bool flag) {
 	}
 }
 
-
+// отмена хода
 void moveCancellation() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
@@ -48,14 +68,19 @@ void moveCancellation() {
 	}
 }
 
-
+// уничтожение шашок
 void minusChecker(bool flag) {
 
 
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			
-			if (field[i][j] == 33 || field[i][j] == 44) field[i][j] = 0;
+			if (field[i][j] == 44) field[i][j] = 0;
+			if (field[i][j] == 33) {
+				if (numberPlayer == 1) NumberOfFallenBlackCheckers++;
+				else NumberOfFallenWhiteCheckers++;
+				field[i][j] = 0;
+			}
 			if (flag && field[i][j] == (numberPlayer + 30)) {
 				
 				field[y][x] = (field[i][j] % 30);
@@ -64,23 +89,24 @@ void minusChecker(bool flag) {
 			}
 		}
 	}
+	endOfGame();
 }
 
-
+// проверка на доступность хода
 bool poedanie() {
 
 	int Ykletka_of_enemy = abs(y + hod[0]) / 2;
 	int Xkletka_of_enemy = abs(x + hod[1]) / 2;
 	location_of_enemy = &field[Ykletka_of_enemy][Xkletka_of_enemy];
 
-	if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (field[y][x] == 0) && *location_of_enemy != 0 && (y + hod[0]) % 2 == 0 && (x + hod[1]) % 2 == 0) {
+	if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (field[y][x] == 0) && y <= hod[0] && *location_of_enemy != 0 && (y + hod[0]) % 2 == 0 && (x + hod[1]) % 2 == 0) {
 		return true;
 	}
 	return false;
 
 }
 
-
+// подсчитывание кол-во выбранных шашок текущего игрока
 int countOf(int number) {
 	int count = 0;
 	for (int i = 0; i < 8; i++) {
@@ -91,11 +117,10 @@ int countOf(int number) {
 	return count;
 }
 
-
+// действия при нажитии левой кнопки мыши
 void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
 	int* currentCell = &field[y][x];
-
 
 	if (countOf(numberPlayer + 30) == 0 && *currentCell == numberPlayer)
 	{
@@ -124,6 +149,7 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 	else if (*currentCell == 55) {
 		field[y][x] = (numberPlayer % 30);
 		field[hod[0]][hod[1]] = 0;
+		if (field[(y + hod[0]) / 2][(x + hod[1]) / 2] == 1 || field[(y + hod[0]) / 2][(x + hod[1]) / 2] == 2) field[(y + hod[0]) / 2][(x + hod[1]) / 2] = 0;
 		movement(true);
 		if (numberPlayer == 1) numberPlayer = 2;
 		else numberPlayer = 1;
@@ -136,9 +162,12 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 		movement(true);
 	}
 
+
+	if (y == 0) *currentCell += 963;
+
 }
 
-
+// первое окно
 void FirstWindow(HDC hdc) {
 	HBRUSH firstWindow = CreateSolidBrush(RGB(211, 119, 49));
 	SelectObject(hdc, firstWindow);
@@ -146,19 +175,19 @@ void FirstWindow(HDC hdc) {
 	DeleteObject(firstWindow);
 }
 
-
+// действия при нажитии второй кнопки мыши
 void rightClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
 	if (countOf(numberPlayer + 30) == 1 && poedanie()) {
-	field[y][x] = 44;
-	*location_of_enemy = 33;
+		field[y][x] = 44;
+		*location_of_enemy = 33;
 	}
 	else {
 		field[hod[0]][hod[1]] %= 30;
 	}
 }
 
-
+// отрисовка шашок
 void shading_the_checkers(HDC hdc, int j, int i) {
 
 	HBRUSH cell_first_player, cell_second_player, H_selected_cells, white_cage, black_cage;
@@ -239,7 +268,7 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 	DeleteObject(black_cage);
 };
 
-
+// второе окно
 void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 
 	HBRUSH cell_first_player_cell, cell_second_player_cell, white_cage, black_cage;
@@ -336,7 +365,7 @@ void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 
 };
 
-
+// переворот доски
 void Turning_the_board() {
 	int end = 7;
 	int x;
@@ -354,4 +383,17 @@ void Turning_the_board() {
 	}
 };
 
-
+// конец игры
+int endOfGame() {
+	if (NumberOfFallenBlackCheckers == 13) {
+		window = 4;
+		statusOfGame = 1;
+		return 1;
+	}
+	else if (NumberOfFallenWhiteCheckers == 12) {
+		statusOfGame = 1;
+		window = 4;
+		return 2;
+	}
+	else return 0;
+}
