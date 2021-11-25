@@ -13,10 +13,24 @@
 // 55 - клетки, которые предлагаются для хода при выборе шашки
 // 999 - королева
 
-void Crown(int ttbb) {
-	RECT g = {
-		
+void Сrown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color) {
+
+	POINT p[] = {
+		cx,		cy - sizeY,
+		cx + sizeX / 2,	cy,
+		cx + sizeX,	cy - sizeY,
+		cx + sizeX,	cy + sizeY,
+		cx - sizeX,	cy + sizeY,
+		cx - sizeX,	cy - sizeY,
+		cx - sizeX / 2,	cy,
+		cx,		cy - sizeY
 	};
+
+	HPEN hPen;
+	hPen = CreatePen(PS_SOLID, 3, color);
+	SelectObject(hdc, hPen);
+	Polygon(hdc, p, 8);
+	DeleteObject(hPen);
 }
 
 void movement(bool flag) {
@@ -31,8 +45,14 @@ void movement(bool flag) {
 					if (field[y - 1][x - 1] == 0) field[y - 1][x - 1] = 55;
 					if (field[y - 1][x + 1] == 0) field[y - 1][x + 1] = 55;
 					if (x > 1 && x < 6 && y > 1 && y < 6) {
-						if (field[y - 1][x + 1] == 1 || field[y - 1][x + 1] == 2) field[y - 2][x + 2] = 55;
-						if (field[y - 1][x - 1] == 1 || field[y - 1][x - 1] == 2) field[y - 2][x - 2] = 55;
+						if (field[y - 1][x + 1] == 1 || field[y - 1][x + 1] == 2)
+						{
+							if (field[y - 2][x + 2] == 0) field[y - 2][x + 2] = 55;
+						}
+						if (field[y - 1][x - 1] == 1 || field[y - 1][x - 1] == 2)
+						{
+							if (field[y - 2][x - 2] == 0) field[y - 2][x - 2] = 55;
+						}
 					}
 
 				}
@@ -149,7 +169,12 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 	else if (*currentCell == 55) {
 		field[y][x] = (numberPlayer % 30);
 		field[hod[0]][hod[1]] = 0;
-		if (field[(y + hod[0]) / 2][(x + hod[1]) / 2] == 1 || field[(y + hod[0]) / 2][(x + hod[1]) / 2] == 2) field[(y + hod[0]) / 2][(x + hod[1]) / 2] = 0;
+		int ySr = (y + hod[0]);
+		int xSr = (x + hod[1]);
+		if (ySr % 2 == 0 && xSr % 2 == 0)
+		{
+			if (field[ySr / 2][xSr / 2] == 1 || field[ySr / 2][xSr / 2] == 2) field[ySr / 2][xSr / 2] = 0;
+		}
 		movement(true);
 		if (numberPlayer == 1) numberPlayer = 2;
 		else numberPlayer = 1;
@@ -180,7 +205,7 @@ void rightClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
 	if (countOf(numberPlayer + 30) == 1 && poedanie()) {
 		field[y][x] = 44;
-		*location_of_enemy = 33;
+		//*location_of_enemy = 33;
 	}
 	else {
 		field[hod[0]][hod[1]] %= 30;
@@ -219,7 +244,22 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 	}
+
+	if (field[j][i] == 4) { 
+		SelectObject(hdc, stroke_second_player_cell);
+		SelectObject(hdc, cell_second_player);
+
+		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+	}
+
 	else if (field[j][i] == 1) {  // закрашивание шашки первого игрока
+		SelectObject(hdc, stroke_first_player_cell);
+		SelectObject(hdc, cell_first_player);
+
+		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+	}
+
+	else if (field[j][i] == 3) { 
 		SelectObject(hdc, stroke_first_player_cell);
 		SelectObject(hdc, cell_first_player);
 
@@ -232,7 +272,19 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 	}
+	if (field[j][i] == 33) { 
+		SelectObject(hdc, green_cell);
+		SelectObject(hdc, cell_first_player);
+
+		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+	}
 	else if (field[j][i] == 32) {  // закрашивание выделенной шашки второго игрока
+		SelectObject(hdc, green_cell);
+		SelectObject(hdc, cell_second_player);
+
+		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+	}
+	else if (field[j][i] == 34) { 
 		SelectObject(hdc, green_cell);
 		SelectObject(hdc, cell_second_player);
 
@@ -249,12 +301,12 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		SelectObject(hdc, black_cage);
 		Rectangle(hdc, cx - 46, cy - 46, cx + 48, cy + 48);
 	}
-	else if (field[j][i] == 33) {
+	/*else if (field[j][i] == 33) {
 		SelectObject(hdc, eatenUp);
 		if (numberPlayer == 1) SelectObject(hdc, cell_second_player);
 		else SelectObject(hdc, cell_first_player);
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
-	}
+	}*/
 
 	DeleteObject(cell_first_player);
 	DeleteObject(cell_second_player);

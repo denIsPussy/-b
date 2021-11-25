@@ -12,6 +12,7 @@ int countOf(int number);
 bool poedanie();
 void minusChecker(bool flag);
 void moveCancellation();
+void Ñrown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color);
 
 extern int hod[2];
 extern int field[8][8];
