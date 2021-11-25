@@ -12,7 +12,8 @@
 // 44 - клетки, по которым пройдет наша шашка 
 // 55 - клетки, которые предлагаются для хода при выборе шашки
 // 999 - королева
-
+int countOfKushats = -1;
+int kushats[20][2];
 void Сrown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color) {
 
 	POINT p[] = {
@@ -33,6 +34,14 @@ void Сrown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color) {
 	DeleteObject(hPen);
 }
 
+void Queen() {
+	for (int j = 0; j < 8; j++) {
+		if (field[0][j] == (numberPlayer)) {
+			field[0][j] = (numberPlayer + 2);
+		}
+	}
+}
+
 void movement(bool flag) {
 	
 	int rightwardMove, leftwardMove;
@@ -44,7 +53,7 @@ void movement(bool flag) {
 				if (x > 0 && x < 7) {
 					if (field[y - 1][x - 1] == 0) field[y - 1][x - 1] = 55;
 					if (field[y - 1][x + 1] == 0) field[y - 1][x + 1] = 55;
-					if (x > 1 && x < 6 && y > 1 && y < 6) {
+					if (x > 1 && x < 6 && y > 1) {
 						if (field[y - 1][x + 1] == 1 || field[y - 1][x + 1] == 2)
 						{
 							if (field[y - 2][x + 2] == 0) field[y - 2][x + 2] = 55;
@@ -61,6 +70,17 @@ void movement(bool flag) {
 				}
 				if (x < 7) {
 					if (field[y - 1][x + 1] == 0) field[y - 1][x + 1] = 55;
+				}
+			}
+			if (countOf(numberPlayer + 2 + 30) != 0) {
+				
+				if ((x > 1 && x < 6) && (y < 6)) {
+					if (field[y + 2][x - 2] == 0 && field[y + 1][x - 1] != 0) field[y + 2][x - 2] = 55;
+					if (field[y + 2][x + 2] == 0 && field[y + 1][x + 1] != 0) field[y + 2][x + 2] = 55;
+				}
+				if ((x > 0 && x < 7) && (y < 7)) {
+					if (field[y + 1][x - 1] == 0) field[y + 1][x - 1] = 55;
+					if (field[y + 1][x + 1] == 0) field[y + 1][x + 1] = 55;
 				}
 			}
 		}
@@ -80,11 +100,17 @@ void moveCancellation() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (field[i][j] == 44) field[i][j] = 0;
-			if (field[i][j] == 33) {
+			/*if (field[i][j] == 33) {
 				if (numberPlayer == 1) field[i][j] = 2;
 				else field[i][j] = 1;
-			}
+			}*/
 		}
+	}
+}
+
+void kushatts() {
+	for (int i = 0; i <= countOfKushats; i++) {
+		field[kushats[i][0]][kushats[i][1]] = 0;
 	}
 }
 
@@ -120,6 +146,11 @@ bool poedanie() {
 	location_of_enemy = &field[Ykletka_of_enemy][Xkletka_of_enemy];
 
 	if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (field[y][x] == 0) && y <= hod[0] && *location_of_enemy != 0 && (y + hod[0]) % 2 == 0 && (x + hod[1]) % 2 == 0) {
+		if (countOf(31) == 1 || countOf(32) == 1 || countOf(33) == 1 || countOf(34) == 1) {
+			countOfKushats++;
+			kushats[countOfKushats][0] = Ykletka_of_enemy;
+			kushats[countOfKushats][1] = Xkletka_of_enemy;
+		}
 		return true;
 	}
 	return false;
@@ -142,13 +173,13 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
 	int* currentCell = &field[y][x];
 
-	if (countOf(numberPlayer + 30) == 0 && *currentCell == numberPlayer)
+	if (countOf(numberPlayer + 30) == 0 && ((*currentCell == numberPlayer) || (*currentCell == (numberPlayer + 2))))
 	{
 		*currentCell += 30;
 		movement(false);
 
 	}
-	else if (countOf(numberPlayer + 30) == 1 && *currentCell == numberPlayer)
+	else if (countOf(numberPlayer + 30) == 1 && ((*currentCell == numberPlayer) || (*currentCell == (numberPlayer + 2))))
 	{
 		*currentCell += 30;
 		field[hod[0]][hod[1]] %= 30;
@@ -157,8 +188,11 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 	}
 	else if (countOf(numberPlayer + 30) == 1 && *currentCell == 44 && y == hod[0] && x == hod[1]) {
 		minusChecker(true);
+		Queen();
 		if (numberPlayer == 1) numberPlayer = 2;
 		else numberPlayer = 1;
+		
+		kushatts();
 		if (statusOfGame == 0) Turning_the_board();
 		else {
 			statusOfGame = 1;
@@ -167,7 +201,8 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 		movement(true);
 	}
 	else if (*currentCell == 55) {
-		field[y][x] = (numberPlayer % 30);
+		//field[y][x] = (numberPlayer % 30);
+		field[y][x] = field[hod[0]][hod[1]] % 30;
 		field[hod[0]][hod[1]] = 0;
 		int ySr = (y + hod[0]);
 		int xSr = (x + hod[1]);
@@ -176,8 +211,10 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 			if (field[ySr / 2][xSr / 2] == 1 || field[ySr / 2][xSr / 2] == 2) field[ySr / 2][xSr / 2] = 0;
 		}
 		movement(true);
+		Queen();
 		if (numberPlayer == 1) numberPlayer = 2;
 		else numberPlayer = 1;
+		
 		Turning_the_board();
 	}
 	else
@@ -188,8 +225,8 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 	}
 
 
-	if (y == 0) *currentCell += 963;
-
+	//if (y == 0) *currentCell += 963;
+	Queen();
 }
 
 // первое окно
@@ -248,8 +285,9 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 	if (field[j][i] == 4) { 
 		SelectObject(hdc, stroke_second_player_cell);
 		SelectObject(hdc, cell_second_player);
-
+		
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+		Сrown(hdc, cx, cy, 20, 20, RGB(255, 255, 255));
 	}
 
 	else if (field[j][i] == 1) {  // закрашивание шашки первого игрока
@@ -264,6 +302,7 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		SelectObject(hdc, cell_first_player);
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+		Сrown(hdc, cx, cy, 20, 20, RGB(0, 0, 0));
 	}
 
 	if (field[j][i] == 31) { // закрашивание выделенной шашки первого игрока
@@ -277,6 +316,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		SelectObject(hdc, cell_first_player);
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+		Сrown(hdc, cx, cy, 20, 20, RGB(0, 0, 0));
+
 	}
 	else if (field[j][i] == 32) {  // закрашивание выделенной шашки второго игрока
 		SelectObject(hdc, green_cell);
@@ -289,6 +330,7 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		SelectObject(hdc, cell_second_player);
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+		Сrown(hdc, cx, cy, 20, 20, RGB(255, 255, 255));
 	}
 	if (field[j][i] == 44) { // закрашивание шашки при многократном ходе
 		SelectObject(hdc, selected_cells);
@@ -395,25 +437,40 @@ void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 	TCHAR  tNumberOfFallenWhiteCheckers[5];
 	sprintf(nNumberOfFallenWhiteCheckers, "%d", NumberOfFallenWhiteCheckers);
 	OemToChar(nNumberOfFallenWhiteCheckers, tNumberOfFallenWhiteCheckers);
-	TextOut(hdc, 1110, 50, (LPCWSTR)tNumberOfFallenWhiteCheckers, _tcslen(tNumberOfFallenWhiteCheckers));
+	TextOut(hdc, 1115, 50, (LPCWSTR)tNumberOfFallenWhiteCheckers, _tcslen(tNumberOfFallenWhiteCheckers));
 
 
 	char nNumberOfFallenBlackCheckers[5];
 	TCHAR  tNumberOfFallenBlackCheckers[5];
 	sprintf(nNumberOfFallenBlackCheckers, "%d", NumberOfFallenBlackCheckers);
 	OemToChar(nNumberOfFallenBlackCheckers, tNumberOfFallenBlackCheckers);
-	TextOut(hdc, 1120, 70, (LPCWSTR)tNumberOfFallenBlackCheckers, _tcslen(tNumberOfFallenBlackCheckers));
+	TextOut(hdc, 1125, 70, (LPCWSTR)tNumberOfFallenBlackCheckers, _tcslen(tNumberOfFallenBlackCheckers));
 
-
+	int xxx = countOf(1) + countOf(31);
 	TCHAR string3[] = _T("Игрок, который сейчас ходит: ");
 	TextOut(hdc, 900, 90, (LPCWSTR)string3, _tcslen(string3));
 	char nnumberPlayer[5];
 	TCHAR  tnumberPlayer[5];
 	sprintf(nnumberPlayer, "%d", numberPlayer);
 	OemToChar(nnumberPlayer, tnumberPlayer);
-	TextOut(hdc, 1180, 90, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
+	TextOut(hdc, 1185, 90, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
+
+	TCHAR string4[] = _T("Кол-во белых шашек: ");
+	TextOut(hdc, 900, 110, (LPCWSTR)string4, _tcslen(string4));
+	//char nnumberPlayer[5];
+	//TCHAR  tnumberPlayer[5];
+	sprintf(nnumberPlayer, "%d", countOf(1) + countOf(31) + countOf(33) + countOf(3));
+	OemToChar(nnumberPlayer, tnumberPlayer);
+	TextOut(hdc, 1095, 110, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
 
 
+	TCHAR string5[] = _T("Кол-во черных шашек: ");
+	TextOut(hdc, 900, 130, (LPCWSTR)string5, _tcslen(string5));
+	//char nnumberPlayer[5];
+	//TCHAR  tnumberPlayer[5];
+	sprintf(nnumberPlayer, "%d", countOf(2) + countOf(32) + countOf(34) + countOf(4));
+	OemToChar(nnumberPlayer, tnumberPlayer);
+	TextOut(hdc, 1105, 130, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
 
 };
 

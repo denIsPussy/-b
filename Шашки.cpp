@@ -16,6 +16,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // Текст строки за�
 WCHAR szWindowClass[MAX_LOADSTRING];            // имя класса главного окна
 HDC hdc;
 
+bool fuflo = true;
 int statusOfGame = 0; // 0 - игра идет, 1 - игра закончилась
 int* location_of_enemy;
 int hod[2];
@@ -33,14 +34,14 @@ int x = 0;
 int y = 0; // координаты нажатия
 
 int field[8][8] = {                 // игровое поле
-   {0, 2, 0, 2, 0, 2, 0, 2},
-   {2, 0, 2, 0, 0, 0, 2, 0},
-   {0, 2, 0, 2, 0, 2, 0, 2},
+   {0, 2, 0, 2, 0, 0, 0, 2},
+   {2, 0, 2, 0, 2, 0, 2, 0},
+   {0, 2, 0, 1, 0, 2, 0, 2},
    {0, 0, 0, 0, 0, 0, 0, 0},
    {0, 0, 0, 2, 0, 0, 0, 2},
    {1, 0, 1, 0, 1, 0, 1, 0},
-   {0, 1, 0, 1, 0, 1, 0, 1},
-   {1, 0, 1, 0, 1, 0, 1, 0}
+   {0, 1, 0, 1, 0, 2, 0, 1},
+   {1, 0, 1, 0, 0, 0, 1, 0}
 };
 
 // Отправить объявления функций, включенных в этот модуль кода:
@@ -87,7 +88,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     return (int)msg.wParam;
 }
 
+void dfdf() {
 
+}
 
 //
 //  ФУНКЦИЯ: MyRegisterClass()
@@ -163,7 +166,9 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //HDC return1();
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-
+    static HWND hBtn; // дескриптор кнопки
+    static HWND hEdt1; // дескрипторы поля редактирования
+    
     switch (message)
     {
         //HDC hdc;
@@ -172,7 +177,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PAINTSTRUCT ps;
         LOGFONT lf;
         HFONT hFont;
-
     case WM_COMMAND:
     {
         int wmId = LOWORD(wParam);
@@ -188,7 +192,45 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         default:
             return DefWindowProc(hWnd, message, wParam, lParam);
         }
+
+        //if (lParam == (LPARAM)hBtn)    // если нажали на кнопку
+        //{
+        //    TCHAR StrT[20];
+        //    char str[20];
+
+        //    // Берем имя из элемента редактирования и помещаем в строку Windows
+        //    GetWindowText(hEdt1, StrT, sizeof(StrT));
+
+        //    // Конвертирует строку Windows в строку Си 
+        //    // !!!! ВАЖНО - корректно работает ТОЛЬКО для латинских букв!
+        //    wcstombs(str, StrT, 20);
+
+        //    // Фокус возвращаем в игру
+        //    // нажатия клавиш снова управляют игрой!
+        //    SetFocus(hWnd);
+
+        //    // добавляем рекорд в таблицу рекордов
+        //    addRecord(str); // новый рекорд просто вставляем снизу в таблицу
+        //    //InsertRecord(str); // новый рекорд вставляем в таблицу, сохраняя сортировку
+        //    InvalidateRect(hWnd, NULL, TRUE);
+
     }
+    break;
+    case WM_CREATE: // сообщение создания окна
+    
+        //hInst = ((LPCREATESTRUCT)lParam)->hInstance; // дескриптор приложения
+        //// Создаем и показываем поле редактирования - для ввода имени рекордсмена
+        //hEdt1 = CreateWindowW(_T("edit"), _T("Noname"),
+        //    WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 650, 50, 160, 20,
+        //    hWnd, 0, hInst, NULL);
+        //ShowWindow(hEdt1, SW_SHOWNORMAL);
+
+        //// Создаем и показываем кнопку
+        //hBtn = CreateWindowW(_T("button"), _T("Запомнить!"),
+        //    WS_CHILD | WS_VISIBLE | WS_BORDER,
+        //    650, 100, 160, 20, hWnd, 0, hInst, NULL);
+        //ShowWindow(hBtn, SW_SHOWNORMAL);
+    
     break;
     case WM_PAINT:
     {
@@ -238,11 +280,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             window--;
             InvalidateRect(hWnd, NULL, TRUE);
             break;
-    case VK_RIGHT:
-        window++;
-        InvalidateRect(hWnd, NULL, TRUE);
-        break;
-    }
+        case VK_RIGHT:
+            window++;
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
+        case VK_UP:
+        if (fuflo){
+            hEdt1 = CreateWindowW(_T("edit"), _T("Noname"),
+                WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 850, 50, 160, 20,
+                hWnd, 0, hInst, NULL);
+            ShowWindow(hEdt1, SW_SHOWNORMAL);
+
+            // Создаем и показываем кнопку
+            hBtn = CreateWindowW(_T("button"), _T("Запомнить!"),
+                WS_CHILD | WS_VISIBLE | WS_BORDER,
+                850, 100, 160, 20, hWnd, 0, hInst, NULL);
+            ShowWindow(hBtn, SW_SHOWNORMAL);
+            //EnableWindow(GetDlgItem(hWnd, 0), false);
+            fuflo = !fuflo;
+        }
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
+        case VK_DOWN:
+            if (!fuflo)
+            {
+                DestroyWindow(hBtn);
+                DestroyWindow(hEdt1);
+                fuflo = !fuflo;
+            }
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
+        }
     break;
     case WM_DESTROY:
         PostQuitMessage(0);
