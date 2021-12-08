@@ -15,6 +15,7 @@ void moveCancellation();
 void Ñrown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color);
 void Queen();
 void kushatts();
+void movementOfQueen();
 
 extern int hod[2];
 extern int field[8][8];

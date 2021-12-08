@@ -30,18 +30,29 @@ int count = 0;
 bool flag = true; // flag обозначает разрешение выделять шашку
 
 
-int x = 0; 
+int x = 0;
 int y = 0; // координаты нажатия
 
+//int field[8][8] = {                 // игровое поле
+//   {0, 2, 0, 2, 0, 0, 0, 2},
+//   {2, 0, 2, 0, 2, 0, 2, 0},
+//   {0, 2, 0, 1, 0, 2, 0, 2},
+//   {0, 0, 0, 0, 0, 0, 0, 0},
+//   {0, 0, 0, 2, 0, 0, 0, 2},
+//   {1, 0, 1, 0, 1, 0, 1, 0},
+//   {0, 1, 0, 1, 0, 2, 0, 1},
+//   {1, 0, 1, 0, 0, 0, 1, 0}
+//};
+
 int field[8][8] = {                 // игровое поле
-   {0, 2, 0, 2, 0, 0, 0, 2},
-   {2, 0, 2, 0, 2, 0, 2, 0},
-   {0, 2, 0, 1, 0, 2, 0, 2},
    {0, 0, 0, 0, 0, 0, 0, 0},
-   {0, 0, 0, 2, 0, 0, 0, 2},
-   {1, 0, 1, 0, 1, 0, 1, 0},
-   {0, 1, 0, 1, 0, 2, 0, 1},
-   {1, 0, 1, 0, 0, 0, 1, 0}
+   {0, 0, 3, 0, 2, 0, 2, 0},
+   {0, 2, 0, 0, 0, 0, 0, 0},
+   {0, 0, 0, 0, 2, 0, 2, 0},
+   {0, 2, 0, 0, 0, 0, 0, 0},
+   {0, 0, 3, 0, 2, 0, 2, 0},
+   {0, 0, 0, 1, 0, 0, 0, 0},
+   {0, 0, 0, 0, 0, 0, 0, 0}
 };
 
 // Отправить объявления функций, включенных в этот модуль кода:
@@ -168,7 +179,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static HWND hBtn; // дескриптор кнопки
     static HWND hEdt1; // дескрипторы поля редактирования
-    
+
     switch (message)
     {
         //HDC hdc;
@@ -217,7 +228,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
     case WM_CREATE: // сообщение создания окна
-    
+
         //hInst = ((LPCREATESTRUCT)lParam)->hInstance; // дескриптор приложения
         //// Создаем и показываем поле редактирования - для ввода имени рекордсмена
         //hEdt1 = CreateWindowW(_T("edit"), _T("Noname"),
@@ -230,8 +241,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         //    WS_CHILD | WS_VISIBLE | WS_BORDER,
         //    650, 100, 160, 20, hWnd, 0, hInst, NULL);
         //ShowWindow(hBtn, SW_SHOWNORMAL);
-    
-    break;
+
+        break;
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
@@ -244,7 +255,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
     case WM_LBUTTONDOWN:
-        
+
         if (statusOfGame == 0)
         {
             hod[0] = y;
@@ -255,7 +266,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             if (x < 8 && x >= 0 && y < 8 && y >= 0) leftClickingForTheSecondWindow(hdc, lParam);
         }
-        
+
         InvalidateRect(hWnd, NULL, TRUE);
         break;
     case WM_RBUTTONDOWN:
@@ -285,20 +296,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             InvalidateRect(hWnd, NULL, TRUE);
             break;
         case VK_UP:
-        if (fuflo){
-            hEdt1 = CreateWindowW(_T("edit"), _T("Noname"),
-                WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 850, 50, 160, 20,
-                hWnd, 0, hInst, NULL);
-            ShowWindow(hEdt1, SW_SHOWNORMAL);
+            if (fuflo) {
+                hEdt1 = CreateWindowW(_T("edit"), _T("Noname"),
+                    WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 850, 50, 160, 20,
+                    hWnd, 0, hInst, NULL);
+                ShowWindow(hEdt1, SW_SHOWNORMAL);
 
-            // Создаем и показываем кнопку
-            hBtn = CreateWindowW(_T("button"), _T("Запомнить!"),
-                WS_CHILD | WS_VISIBLE | WS_BORDER,
-                850, 100, 160, 20, hWnd, 0, hInst, NULL);
-            ShowWindow(hBtn, SW_SHOWNORMAL);
-            //EnableWindow(GetDlgItem(hWnd, 0), false);
-            fuflo = !fuflo;
-        }
+                // Создаем и показываем кнопку
+                hBtn = CreateWindowW(_T("button"), _T("Запомнить!"),
+                    WS_CHILD | WS_VISIBLE | WS_BORDER,
+                    850, 100, 160, 20, hWnd, 0, hInst, NULL);
+                ShowWindow(hBtn, SW_SHOWNORMAL);
+                //EnableWindow(GetDlgItem(hWnd, 0), false);
+                fuflo = !fuflo;
+            }
             InvalidateRect(hWnd, NULL, TRUE);
             break;
         case VK_DOWN:
@@ -311,7 +322,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             InvalidateRect(hWnd, NULL, TRUE);
             break;
         }
-    break;
+        break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;

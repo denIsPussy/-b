@@ -43,11 +43,15 @@ void Queen() {
 }
 
 void movement(bool flag) {
-	
+
 	int rightwardMove, leftwardMove;
 
-	
+
 	if (!flag) {
+		if (countOf(numberPlayer + 2 + 30) != 0) {
+			movementOfQueen();
+			return;
+		}
 		if (true) {
 			if (y > 0) {
 				if (x > 0 && x < 7) {
@@ -73,7 +77,7 @@ void movement(bool flag) {
 				}
 			}
 			if (countOf(numberPlayer + 2 + 30) != 0) {
-				
+
 				if ((x > 1 && x < 6) && (y < 6)) {
 					if (field[y + 2][x - 2] == 0 && field[y + 1][x - 1] != 0) field[y + 2][x - 2] = 55;
 					if (field[y + 2][x + 2] == 0 && field[y + 1][x + 1] != 0) field[y + 2][x + 2] = 55;
@@ -82,6 +86,7 @@ void movement(bool flag) {
 					if (field[y + 1][x - 1] == 0) field[y + 1][x - 1] = 55;
 					if (field[y + 1][x + 1] == 0) field[y + 1][x + 1] = 55;
 				}
+
 			}
 		}
 	}
@@ -95,19 +100,127 @@ void movement(bool flag) {
 	}
 }
 
+
+void movementOfQueen() {
+
+	int kX = 1;
+	int kY = 1;
+
+	int xy = 0;
+	int xY = 0;
+	int Xy = 0;
+	int XY = 0;
+
+	while (true) {
+		bool flagxy = true;
+		bool flagxY = true;
+		bool flagXy = true;
+		bool flagXY = true;
+
+		if (x + kX < 8 && y + kY < 8)
+		{
+			if (field[y + kY][x + kX] == 0 && XY != 2)
+			{
+				field[y + kY][x + kX] = 55;
+				if (x + kX < 7 && y + kY < 7)
+				{
+					if (field[y + kY + 1][x + kX + 1] != 0) XY++;
+				}
+
+			}
+			flagXY = false;
+		}
+		if (x + kX < 8 && y - kY >= 0)
+		{
+			if (field[y - kY][x + kX] == 0 && Xy != 2)
+			{
+				field[y - kY][x + kX] = 55;
+				if (x + kX < 7 && y - kY >= 1)
+				{
+					if (field[y - kY - 1][x + kX + 1] != 0) Xy++;
+				}
+
+			}
+			flagXy = false;
+		}
+		if (x - kX >= 0 && y + kY < 8)
+		{
+			if (field[y + kY][x - kX] == 0 && xY != 2)
+			{
+				field[y + kY][x - kX] = 55;
+				if (x - kX >= 1 && y + kY < 7)
+				{
+					if (field[y + kY + 1][x - kX - 1] != 0) xY++;
+				}
+
+			}
+			flagxY = false;
+		}
+		if (x - kX >= 0 && y - kY >= 0)
+		{
+			if (field[y - kY][x - kX] == 0 && xy != 2)
+			{
+				field[y - kY][x - kX] = 55;
+				if (x - kX >= 1 && y - kY >= 1)
+				{
+					if (field[y - kY - 1][x - kX - 1] != 0) xy++;
+				}
+
+
+			}
+			flagxy = false;
+		}
+
+		if ((flagxy && flagxY && flagXy && flagXY)) break;
+
+		kY++;
+		kX++;
+	}
+
+
+}
+
+void QueenWannaEat() {
+	int kx = 0;
+	int ky = 0;
+	int Y = hod[0];
+	int X = hod[1];
+	if (y - hod[0] > 0) {
+		if (x - hod[1] > 0) kx = 1;
+		else kx = -1;
+		ky = 1;
+	}
+	else {
+		if (x - hod[1] > 0) kx = 1;
+		else kx = -1;
+		ky = -1;
+	}
+
+	while (true) {
+		if (hod[0] + ky == y && hod[1] + kx == x) return;
+		if (field[hod[0] + ky][hod[1] + kx] != 55)
+		{
+			field[hod[0] + ky][hod[1] + kx] = 0;
+			return;
+		}
+		ky += ky;
+		kx += kx;
+	}
+
+}
+
+
 // отмена хода
 void moveCancellation() {
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			if (field[i][j] == 44) field[i][j] = 0;
-			/*if (field[i][j] == 33) {
-				if (numberPlayer == 1) field[i][j] = 2;
-				else field[i][j] = 1;
-			}*/
+			if (field[i][j] >= 30 && field[i][j] <= 34) {
+				field[i][j] %= 30;
+			}
 		}
 	}
 }
-
 void kushatts() {
 	for (int i = 0; i <= countOfKushats; i++) {
 		field[kushats[i][0]][kushats[i][1]] = 0;
@@ -120,15 +233,15 @@ void minusChecker(bool flag) {
 
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
-			
+
 			if (field[i][j] == 44) field[i][j] = 0;
-			if (field[i][j] == 33) {
+			/*if (field[i][j] == 33) {
 				if (numberPlayer == 1) NumberOfFallenBlackCheckers++;
 				else NumberOfFallenWhiteCheckers++;
 				field[i][j] = 0;
-			}
-			if (flag && field[i][j] == (numberPlayer + 30)) {
-				
+			}*/
+			if (flag && (field[i][j] == (numberPlayer + 30) || field[i][j] == (numberPlayer + 30 + 2))) {
+
 				field[y][x] = (field[i][j] % 30);
 				field[i][j] = 0;
 				flag = false;
@@ -144,12 +257,19 @@ bool poedanie() {
 	int Ykletka_of_enemy = abs(y + hod[0]) / 2;
 	int Xkletka_of_enemy = abs(x + hod[1]) / 2;
 	location_of_enemy = &field[Ykletka_of_enemy][Xkletka_of_enemy];
-
-	if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (field[y][x] == 0) && y <= hod[0] && *location_of_enemy != 0 && (y + hod[0]) % 2 == 0 && (x + hod[1]) % 2 == 0) {
+	bool flaag = true;
+	if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (field[y][x] == 0) && *location_of_enemy != 0 && (y + hod[0]) % 2 == 0 && (x + hod[1]) % 2 == 0) {
 		if (countOf(31) == 1 || countOf(32) == 1 || countOf(33) == 1 || countOf(34) == 1) {
-			countOfKushats++;
-			kushats[countOfKushats][0] = Ykletka_of_enemy;
-			kushats[countOfKushats][1] = Xkletka_of_enemy;
+			if (countOfKushats == 0) {
+				if (y <= hod[0]) flaag = true;
+			}
+			else flaag = false;
+			if (flag)
+			{
+				countOfKushats++;
+				kushats[countOfKushats][0] = Ykletka_of_enemy;
+				kushats[countOfKushats][1] = Xkletka_of_enemy;
+			}
 		}
 		return true;
 	}
@@ -173,25 +293,24 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
 	int* currentCell = &field[y][x];
 
-	if (countOf(numberPlayer + 30) == 0 && ((*currentCell == numberPlayer) || (*currentCell == (numberPlayer + 2))))
-	{
+	if ((countOf(numberPlayer + 30) == 0 && (*currentCell == numberPlayer) && (countOf(numberPlayer + 30 + 2) == 0)) ||
+		(countOf(numberPlayer + 30 + 2) == 0 && (*currentCell == (numberPlayer + 2)) && countOf(numberPlayer + 30) == 0)){
 		*currentCell += 30;
 		movement(false);
-
 	}
-	else if (countOf(numberPlayer + 30) == 1 && ((*currentCell == numberPlayer) || (*currentCell == (numberPlayer + 2))))
-	{
-		*currentCell += 30;
-		field[hod[0]][hod[1]] %= 30;
-		movement(true);
-		movement(false);
+	else if ((countOf(numberPlayer + 30) == 1 && (*currentCell == numberPlayer || (*currentCell == (numberPlayer + 2)))) ||
+			((countOf(numberPlayer + 30 + 2) == 1 && ((*currentCell == (numberPlayer + 2) || (*currentCell == (numberPlayer))))))) {
+			*currentCell += 30;
+			field[hod[0]][hod[1]] %= 30;
+			movement(true);
+			movement(false);
 	}
-	else if (countOf(numberPlayer + 30) == 1 && *currentCell == 44 && y == hod[0] && x == hod[1]) {
+	else if ((countOf(numberPlayer + 30) == 1 || countOf(numberPlayer + 30 + 2) == 1) && *currentCell == 44 && y == hod[0] && x == hod[1]) {
 		minusChecker(true);
 		Queen();
 		if (numberPlayer == 1) numberPlayer = 2;
 		else numberPlayer = 1;
-		
+
 		kushatts();
 		if (statusOfGame == 0) Turning_the_board();
 		else {
@@ -204,22 +323,27 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 		//field[y][x] = (numberPlayer % 30);
 		field[y][x] = field[hod[0]][hod[1]] % 30;
 		field[hod[0]][hod[1]] = 0;
+		QueenWannaEat();
+		//if (field[y][x] % 30 == 3 || field[y][x] == 4) {
+		//	//QueenWannaEat();
+		//}
 		int ySr = (y + hod[0]);
 		int xSr = (x + hod[1]);
 		if (ySr % 2 == 0 && xSr % 2 == 0)
 		{
 			if (field[ySr / 2][xSr / 2] == 1 || field[ySr / 2][xSr / 2] == 2) field[ySr / 2][xSr / 2] = 0;
 		}
+
 		movement(true);
 		Queen();
 		if (numberPlayer == 1) numberPlayer = 2;
 		else numberPlayer = 1;
-		
+
 		Turning_the_board();
 	}
 	else
 	{
-		field[hod[0]][hod[1]] %= 30;
+		//field[hod[0]][hod[1]] %= 30;
 		moveCancellation();
 		movement(true);
 	}
@@ -240,7 +364,7 @@ void FirstWindow(HDC hdc) {
 // действия при нажитии второй кнопки мыши
 void rightClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
-	if (countOf(numberPlayer + 30) == 1 && poedanie()) {
+	if ((countOf(numberPlayer + 30) == 1 || countOf(numberPlayer + 30 + 2) == 1) && poedanie()) {
 		field[y][x] = 44;
 		//*location_of_enemy = 33;
 	}
@@ -282,10 +406,10 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 	}
 
-	if (field[j][i] == 4) { 
+	if (field[j][i] == 4) {
 		SelectObject(hdc, stroke_second_player_cell);
 		SelectObject(hdc, cell_second_player);
-		
+
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 		Сrown(hdc, cx, cy, 20, 20, RGB(255, 255, 255));
 	}
@@ -297,7 +421,7 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 	}
 
-	else if (field[j][i] == 3) { 
+	else if (field[j][i] == 3) {
 		SelectObject(hdc, stroke_first_player_cell);
 		SelectObject(hdc, cell_first_player);
 
@@ -311,7 +435,7 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 	}
-	if (field[j][i] == 33) { 
+	if (field[j][i] == 33) {
 		SelectObject(hdc, green_cell);
 		SelectObject(hdc, cell_first_player);
 
@@ -325,7 +449,7 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 	}
-	else if (field[j][i] == 34) { 
+	else if (field[j][i] == 34) {
 		SelectObject(hdc, green_cell);
 		SelectObject(hdc, cell_second_player);
 
@@ -338,7 +462,7 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 	}
-	if (field[j][i] == 55) { 
+	if (field[j][i] == 55) {
 		SelectObject(hdc, strokeCell);
 		SelectObject(hdc, black_cage);
 		Rectangle(hdc, cx - 46, cy - 46, cx + 48, cy + 48);
