@@ -16,6 +16,13 @@ struct FIELD* mapp = &f;
 int countOfKushats = -1;
 int kushats[20][2];
 
+bool background—heck(int n) {
+	for (int i = 1; i < 5; i++) {
+		if (n == i) return true;
+	}
+	return false;
+}
+
 void —rown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color) {
 
 	POINT p[] = {
@@ -107,11 +114,11 @@ void movement(bool flag) {
 					if (mapp->map[y - 1][x - 1] == 0) mapp->map[y - 1][x - 1] = 55;
 					if (mapp->map[y - 1][x + 1] == 0) mapp->map[y - 1][x + 1] = 55;
 					if (x > 1 && x < 6 && y > 1) {
-						if (mapp->map[y - 1][x + 1] == 1 || mapp->map[y - 1][x + 1] == 2)
+						if (background—heck(mapp->map[y - 1][x + 1]))
 						{
 							if (mapp->map[y - 2][x + 2] == 0) mapp->map[y - 2][x + 2] = 55;
 						}
-						if (mapp->map[y - 1][x - 1] == 1 || mapp->map[y - 1][x - 1] == 2)
+						if (background—heck(mapp->map[y - 1][x - 1]))
 						{
 							if (mapp->map[y - 2][x - 2] == 0) mapp->map[y - 2][x - 2] = 55;
 						}
@@ -154,31 +161,46 @@ int QueenRightChecking(bool fufka) {
 
 	int firstX, firstY;
 	int secondX, secondY;
+	int kX = 0;
+	int kY = 0;
 
-	if (hod[0] > y) {
-		secondY = hod[0];
-		firstY = y;
+	secondY = y;
+	secondX = x;
+	firstY = hod[0];
+	firstX = hod[1];
+
+	if (hod[0] < y && hod[1] < x) {
+		kY = 1;
+		kX = 1;
+		firstY += 1;
+		firstX += 1;
 	}
-	else {
-		firstY = hod[0];
-		secondY = y;
+	else if (hod[0] > y && hod[1] < x) {
+		kY = -1;
+		kX = 1;
+		firstY -= 1;
+		firstX += 1;
 	}
-	if (hod[1] > x) {
-		secondX = hod[1];
-		firstX = x;
+	else if (hod[0] < y && hod[1] > x) {
+		kY = 1;
+		kX = -1;
+		firstY += 1;
+		firstX -= 1;
 	}
-	else {
-		firstX = hod[1];
-		secondX = x;
+	else if (hod[0] > y && hod[1] > x) {
+		kY = -1;
+		kX = -1;
+		firstY -= 1;
+		firstX -= 1;
 	}
 	//int i = firstX + 1;
 	//int j = firstY + 1;
-	if (fufka) {
-		secondX++;
-		secondY++;
-	}
-	for (int i = firstX + 1; i < secondX - 1; i++) {
-		for (int j = firstY + 1; j < secondY - 1; j++) {
+	/*if (fufka) {
+		secondX += kX;
+		secondY += kY;
+	}*/
+	/*for (int i = firstX; i < secondX - 1; i += kX) {
+		for (int j = firstY; j < secondY - 1; j += kY) {
 			if (mapp->map[j][i] != 0 && !fufka) return 0;
 			if (fufka && mapp->map[j][i] != 0) {
 				countOfKushats++;
@@ -187,8 +209,25 @@ int QueenRightChecking(bool fufka) {
 				
 			}
 		}
+	}*/
+	int i = firstX;
+	int j = firstY;
+	int count = 0;
+	while ((i < secondX && kX == 1) || (i > secondX && kX == -1)) {
+		if (mapp->map[j][i] != 0 && !fufka) {
+			count++;
+		}
+		if (fufka && mapp->map[j][i] != 0) {
+			countOfKushats++;
+			kushats[countOfKushats][0] = j;
+			kushats[countOfKushats][1] = i;
+
+		}
+		i += kX;
+		j += kY;
+		//if (i > 7) return 0;
 	}
-	return 1;
+	return count;
 }
 
 void movementOfQueen() {
@@ -207,7 +246,7 @@ void movementOfQueen() {
 		bool flagXy = true;
 		bool flagXY = true;
 
-		if (x + kX < 8 && y + kY < 8)
+		if (x + kX < 8 && y + kY < 8 && XY != 2)
 		{
 			if (mapp->map[y + kY][x + kX] == 0 && XY != 2)
 			{
@@ -218,9 +257,11 @@ void movementOfQueen() {
 				}
 
 			}
+			else if (background—heck(mapp->map[y - kY][x - kX])) XY++;
+			
 			flagXY = false;
 		}
-		if (x + kX < 8 && y - kY >= 0)
+		if (x + kX < 8 && y - kY >= 0 && Xy != 2)
 		{
 			if (mapp->map[y - kY][x + kX] == 0 && Xy != 2)
 			{
@@ -231,9 +272,10 @@ void movementOfQueen() {
 				}
 
 			}
+			else if (background—heck(mapp->map[y - kY][x - kX])) Xy++;
 			flagXy = false;
 		}
-		if (x - kX >= 0 && y + kY < 8)
+		if (x - kX >= 0 && y + kY < 8 && xY != 2)
 		{
 			if (mapp->map[y + kY][x - kX] == 0 && xY != 2)
 			{
@@ -244,9 +286,11 @@ void movementOfQueen() {
 				}
 
 			}
+			else if (background—heck(mapp->map[y - kY][x - kX])) xY++;
+			
 			flagxY = false;
 		}
-		if (x - kX >= 0 && y - kY >= 0)
+		if (x - kX >= 0 && y - kY >= 0 && xy != 2)
 		{
 			if (mapp->map[y - kY][x - kX] == 0 && xy != 2)
 			{
@@ -258,6 +302,7 @@ void movementOfQueen() {
 
 
 			}
+			else if (background—heck(mapp->map[y - kY][x - kX])) xy++;
 			flagxy = false;
 		}
 
@@ -362,7 +407,7 @@ bool poedanie() {
 	location_of_enemy = &mapp->map[Ykletka_of_enemy][Xkletka_of_enemy];
 	bool flaag = true;
 	bool flaggg = true;
-	if (countOf(mapp->numberPlayer + 30 + 2) != 0) {
+	if (countOf(mapp->numberPlayer + 30 + 2) == 1) {
 		if (QueenRightChecking(false) != 0) flaggg = true;
 		else flaggg = false;
 	}
