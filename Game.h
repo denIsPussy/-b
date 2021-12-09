@@ -16,9 +16,13 @@ void Ñrown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color);
 void Queen();
 void kushatts();
 void movementOfQueen();
+struct FIELD {
+    int map[8][8];
 
+};
 extern int hod[2];
 extern int field[8][8];
+extern FIELD f;
 extern int x, y;
 extern bool flag;
 extern int* location_of_enemy;
