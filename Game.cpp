@@ -16,7 +16,7 @@ struct FIELD* mapp = &f;
 int countOfKushats = -1;
 int kushats[20][2];
 
-bool background—heck(int n) {
+bool pawnCheck(int n) {
 	for (int i = 1; i < 5; i++) {
 		if (n == i) return true;
 	}
@@ -114,11 +114,11 @@ void movement(bool flag) {
 					if (mapp->map[y - 1][x - 1] == 0) mapp->map[y - 1][x - 1] = 55;
 					if (mapp->map[y - 1][x + 1] == 0) mapp->map[y - 1][x + 1] = 55;
 					if (x > 1 && x < 6 && y > 1) {
-						if (background—heck(mapp->map[y - 1][x + 1]))
+						if (pawnCheck(mapp->map[y - 1][x + 1]))
 						{
 							if (mapp->map[y - 2][x + 2] == 0) mapp->map[y - 2][x + 2] = 55;
 						}
-						if (background—heck(mapp->map[y - 1][x - 1]))
+						if (pawnCheck(mapp->map[y - 1][x - 1]))
 						{
 							if (mapp->map[y - 2][x - 2] == 0) mapp->map[y - 2][x - 2] = 55;
 						}
@@ -257,7 +257,7 @@ void movementOfQueen() {
 				}
 
 			}
-			else if (background—heck(mapp->map[y - kY][x - kX])) XY++;
+			else if (pawnCheck(mapp->map[y - kY][x - kX])) XY++;
 			
 			flagXY = false;
 		}
@@ -272,7 +272,7 @@ void movementOfQueen() {
 				}
 
 			}
-			else if (background—heck(mapp->map[y - kY][x - kX])) Xy++;
+			else if (pawnCheck(mapp->map[y - kY][x - kX])) Xy++;
 			flagXy = false;
 		}
 		if (x - kX >= 0 && y + kY < 8 && xY != 2)
@@ -286,7 +286,7 @@ void movementOfQueen() {
 				}
 
 			}
-			else if (background—heck(mapp->map[y - kY][x - kX])) xY++;
+			else if (pawnCheck(mapp->map[y - kY][x - kX])) xY++;
 			
 			flagxY = false;
 		}
@@ -302,7 +302,7 @@ void movementOfQueen() {
 
 
 			}
-			else if (background—heck(mapp->map[y - kY][x - kX])) xy++;
+			else if (pawnCheck(mapp->map[y - kY][x - kX])) xy++;
 			flagxy = false;
 		}
 
