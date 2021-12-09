@@ -16,10 +16,17 @@ void Ñrown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color);
 void Queen();
 void kushatts();
 void movementOfQueen();
+void saveGame();
+void loadGame();
+void LoadingTheInitialGame();
+
 struct FIELD {
     int map[8][8];
-
+    int numberOfWhiteCheckers;
+    int numberOfBlackCheckers;
+    int numberPlayer;
 };
+
 extern int hod[2];
 extern int field[8][8];
 extern FIELD f;

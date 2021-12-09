@@ -15,6 +15,7 @@
 struct FIELD* mapp = &f;
 int countOfKushats = -1;
 int kushats[20][2];
+
 void Сrown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color) {
 
 	POINT p[] = {
@@ -35,10 +36,57 @@ void Сrown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color) {
 	DeleteObject(hPen);
 }
 
+char saveText[] = "C:\\Users\\Movavi\\source\\repos\\шашки\\-b\\save.txt";
+char loadText[] = "C:\\Users\\Movavi\\source\\repos\\шашки\\-b\\save.txt";
+
+void saveGame() {
+	FILE* Save = fopen("save.txt", "wt");
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			fprintf(Save, "%d ", mapp->map[i][j]);
+		}
+		fprintf(Save, "\n");
+	}
+	fprintf(Save, "%d\n", mapp->numberOfWhiteCheckers);
+	fprintf(Save, "%d\n", mapp->numberOfBlackCheckers);
+	fprintf(Save, "%d", mapp->numberPlayer);
+	fclose(Save);
+}
+
+void loadGame() {
+	FILE* Load = fopen("save.txt", "rt");
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			fscanf(Load, "%d ", &mapp->map[i][j]);
+		}
+		fscanf(Load, "\n");
+	}
+	fscanf(Load, "%d\n", &mapp->numberOfWhiteCheckers);
+	fscanf(Load, "%d\n", &mapp->numberOfBlackCheckers);
+	fscanf(Load, "%d", &mapp->numberPlayer);
+	fclose(Load);
+}
+
+
+void LoadingTheInitialGame() {
+	FILE* Load = fopen("load.txt", "rt");
+	for (int i = 0; i < 8; i++) {
+		for (int j = 0; j < 8; j++) {
+			fscanf(Load, "%d ", &mapp->map[i][j]);
+		}
+		fscanf(Load, "\n");
+	}
+	fscanf(Load, "%d\n", &mapp->numberOfWhiteCheckers);
+	fscanf(Load, "%d\n", &mapp->numberOfBlackCheckers);
+	fscanf(Load, "%d", &mapp->numberPlayer);
+	fclose(Load);
+}
+
+
 void Queen() {
 	for (int j = 0; j < 8; j++) {
-		if (mapp->map[0][j] == (numberPlayer)) {
-			mapp->map[0][j] = (numberPlayer + 2);
+		if (mapp->map[0][j] == (mapp->numberPlayer)) {
+			mapp->map[0][j] = (mapp->numberPlayer + 2);
 		}
 	}
 }
@@ -49,7 +97,7 @@ void movement(bool flag) {
 
 
 	if (!flag) {
-		if (countOf(numberPlayer + 2 + 30) != 0) {
+		if (countOf(mapp->numberPlayer + 2 + 30) != 0) {
 			movementOfQueen();
 			return;
 		}
@@ -77,7 +125,7 @@ void movement(bool flag) {
 					if (mapp->map[y - 1][x + 1] == 0) mapp->map[y - 1][x + 1] = 55;
 				}
 			}
-			if (countOf(numberPlayer + 2 + 30) != 0) {
+			if (countOf(mapp->numberPlayer + 2 + 30) != 0) {
 
 				if ((x > 1 && x < 6) && (y < 6)) {
 					if (mapp->map[y + 2][x - 2] == 0 && mapp->map[y + 1][x - 1] != 0) mapp->map[y + 2][x - 2] = 55;
@@ -101,6 +149,47 @@ void movement(bool flag) {
 	}
 }
 
+int QueenRightChecking(bool fufka) {
+
+
+	int firstX, firstY;
+	int secondX, secondY;
+
+	if (hod[0] > y) {
+		secondY = hod[0];
+		firstY = y;
+	}
+	else {
+		firstY = hod[0];
+		secondY = y;
+	}
+	if (hod[1] > x) {
+		secondX = hod[1];
+		firstX = x;
+	}
+	else {
+		firstX = hod[1];
+		secondX = x;
+	}
+	//int i = firstX + 1;
+	//int j = firstY + 1;
+	if (fufka) {
+		secondX++;
+		secondY++;
+	}
+	for (int i = firstX + 1; i < secondX - 1; i++) {
+		for (int j = firstY + 1; j < secondY - 1; j++) {
+			if (mapp->map[j][i] != 0 && !fufka) return 0;
+			if (fufka && mapp->map[j][i] != 0) {
+				countOfKushats++;
+				kushats[countOfKushats][0] = j;
+				kushats[countOfKushats][1] = i;
+				
+			}
+		}
+	}
+	return 1;
+}
 
 void movementOfQueen() {
 
@@ -237,11 +326,11 @@ void minusChecker(bool flag) {
 
 			if (mapp->map[i][j] == 44) mapp->map[i][j] = 0;
 			/*if (mapp->map[i][j] == 33) {
-				if (numberPlayer == 1) NumberOfFallenBlackCheckers++;
+				if (mapp->numberPlayer == 1) NumberOfFallenBlackCheckers++;
 				else NumberOfFallenWhiteCheckers++;
 				mapp->map[i][j] = 0;
 			}*/
-			if (flag && (mapp->map[i][j] == (numberPlayer + 30) || mapp->map[i][j] == (numberPlayer + 30 + 2))) {
+			if (flag && (mapp->map[i][j] == (mapp->numberPlayer + 30) || mapp->map[i][j] == (mapp->numberPlayer + 30 + 2))) {
 
 				mapp->map[y][x] = (mapp->map[i][j] % 30);
 				mapp->map[i][j] = 0;
@@ -252,31 +341,6 @@ void minusChecker(bool flag) {
 	endOfGame();
 }
 
-// проверка на доступность хода
-bool poedanie() {
-
-	int Ykletka_of_enemy = abs(y + hod[0]) / 2;
-	int Xkletka_of_enemy = abs(x + hod[1]) / 2;
-	location_of_enemy = &mapp->map[Ykletka_of_enemy][Xkletka_of_enemy];
-	bool flaag = true;
-	if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (mapp->map[y][x] == 0) && *location_of_enemy != 0 && (y + hod[0]) % 2 == 0 && (x + hod[1]) % 2 == 0) {
-		if (countOf(31) == 1 || countOf(32) == 1 || countOf(33) == 1 || countOf(34) == 1) {
-			if (countOfKushats == 0) {
-				if (y <= hod[0]) flaag = true;
-			}
-			else flaag = false;
-			if (flag)
-			{
-				countOfKushats++;
-				kushats[countOfKushats][0] = Ykletka_of_enemy;
-				kushats[countOfKushats][1] = Xkletka_of_enemy;
-			}
-		}
-		return true;
-	}
-	return false;
-
-}
 
 // подсчитывание кол-во выбранных шашок текущего игрока
 int countOf(int number) {
@@ -289,39 +353,84 @@ int countOf(int number) {
 	return count;
 }
 
+
+// проверка на доступность хода
+bool poedanie() {
+
+	int Ykletka_of_enemy = abs(y + hod[0]) / 2;
+	int Xkletka_of_enemy = abs(x + hod[1]) / 2;
+	location_of_enemy = &mapp->map[Ykletka_of_enemy][Xkletka_of_enemy];
+	bool flaag = true;
+	bool flaggg = true;
+	if (countOf(mapp->numberPlayer + 30 + 2) != 0) {
+		if (QueenRightChecking(false) != 0) flaggg = true;
+		else flaggg = false;
+	}
+	else {
+		if (*location_of_enemy != 0) flaggg = true;
+		else flaggg = false;
+	}
+	if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (mapp->map[y][x] == 0) && flaggg /*&& (y + hod[0]) % 2 == 0 && (x + hod[1]) % 2 == 0*/) {
+		if (countOf(31) == 1 || countOf(32) == 1 || countOf(33) == 1 || countOf(34) == 1) {
+			if (countOfKushats == 0) {
+				if (y <= hod[0]) flaag = true;
+			}
+			else flaag = false;
+			if (flag)
+			{
+				if (countOf(mapp->numberPlayer + 30 + 2) != 0) QueenRightChecking(true);
+				else {
+					countOfKushats++;
+					kushats[countOfKushats][0] = Ykletka_of_enemy;
+					kushats[countOfKushats][1] = Xkletka_of_enemy;
+				}
+			}
+		}
+		return true;
+	}
+	return false;
+
+}
+
+
+
 // действия при нажитии левой кнопки мыши
 void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
 	int* currentCell = &mapp->map[y][x];
 
-	if ((countOf(numberPlayer + 30) == 0 && (*currentCell == numberPlayer) && (countOf(numberPlayer + 30 + 2) == 0)) ||
-		(countOf(numberPlayer + 30 + 2) == 0 && (*currentCell == (numberPlayer + 2)) && countOf(numberPlayer + 30) == 0)){
+	if ((countOf(mapp->numberPlayer + 30) == 0 && (*currentCell == mapp->numberPlayer) && (countOf(mapp->numberPlayer + 30 + 2) == 0)) ||
+		(countOf(mapp->numberPlayer + 30 + 2) == 0 && (*currentCell == (mapp->numberPlayer + 2)) && countOf(mapp->numberPlayer + 30) == 0)){
 		*currentCell += 30;
 		movement(false);
 	}
-	else if ((countOf(numberPlayer + 30) == 1 && (*currentCell == numberPlayer || (*currentCell == (numberPlayer + 2)))) ||
-			((countOf(numberPlayer + 30 + 2) == 1 && ((*currentCell == (numberPlayer + 2) || (*currentCell == (numberPlayer))))))) {
+	else if ((countOf(mapp->numberPlayer + 30) == 1 && (*currentCell == mapp->numberPlayer || (*currentCell == (mapp->numberPlayer + 2)))) ||
+			((countOf(mapp->numberPlayer + 30 + 2) == 1 && ((*currentCell == (mapp->numberPlayer + 2) || (*currentCell == (mapp->numberPlayer))))))) {
 			*currentCell += 30;
 			mapp->map[hod[0]][hod[1]] %= 30;
 			movement(true);
 			movement(false);
 	}
-	else if ((countOf(numberPlayer + 30) == 1 || countOf(numberPlayer + 30 + 2) == 1) && *currentCell == 44 && y == hod[0] && x == hod[1]) {
+	else if ((countOf(mapp->numberPlayer + 30) == 1 || countOf(mapp->numberPlayer + 30 + 2) == 1) && *currentCell == 44 && y == hod[0] && x == hod[1]) {
 		minusChecker(true);
 		Queen();
-		if (numberPlayer == 1) numberPlayer = 2;
-		else numberPlayer = 1;
+		if (mapp->numberPlayer == 1) mapp->numberPlayer = 2;
+		else mapp->numberPlayer = 1;
 
 		kushatts();
-		if (statusOfGame == 0) Turning_the_board();
-		else {
+		int end = endOfGame();
+		if (end == 1 || end == 2) {
+			return;
+		}
+		else Turning_the_board();
+		/*else {
 			statusOfGame = 1;
 			window = 3;
-		}
+		}*/
 		movement(true);
 	}
 	else if (*currentCell == 55) {
-		//mapp->map[y][x] = (numberPlayer % 30);
+		//mapp->map[y][x] = (mapp->numberPlayer % 30);
 		mapp->map[y][x] = mapp->map[hod[0]][hod[1]] % 30;
 		mapp->map[hod[0]][hod[1]] = 0;
 		QueenWannaEat();
@@ -337,8 +446,8 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
 		movement(true);
 		Queen();
-		if (numberPlayer == 1) numberPlayer = 2;
-		else numberPlayer = 1;
+		if (mapp->numberPlayer == 1) mapp->numberPlayer = 2;
+		else mapp->numberPlayer = 1;
 
 		Turning_the_board();
 	}
@@ -365,7 +474,7 @@ void FirstWindow(HDC hdc) {
 // действия при нажитии второй кнопки мыши
 void rightClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 
-	if ((countOf(numberPlayer + 30) == 1 || countOf(numberPlayer + 30 + 2) == 1) && poedanie()) {
+	if ((countOf(mapp->numberPlayer + 30) == 1 || countOf(mapp->numberPlayer + 30 + 2) == 1) && poedanie()) {
 		mapp->map[y][x] = 44;
 		//*location_of_enemy = 33;
 	}
@@ -470,7 +579,7 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 	}
 	/*else if (mapp->map[j][i] == 33) {
 		SelectObject(hdc, eatenUp);
-		if (numberPlayer == 1) SelectObject(hdc, cell_second_player);
+		if (mapp->numberPlayer == 1) SelectObject(hdc, cell_second_player);
 		else SelectObject(hdc, cell_first_player);
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 	}*/
@@ -576,15 +685,18 @@ void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 	TextOut(hdc, 900, 90, (LPCWSTR)string3, _tcslen(string3));
 	char nnumberPlayer[5];
 	TCHAR  tnumberPlayer[5];
-	sprintf(nnumberPlayer, "%d", numberPlayer);
+	sprintf(nnumberPlayer, "%d", mapp->numberPlayer);
 	OemToChar(nnumberPlayer, tnumberPlayer);
 	TextOut(hdc, 1185, 90, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
 
+
+	mapp->numberOfWhiteCheckers = countOf(1) + countOf(31) + countOf(33) + countOf(3);
+	mapp->numberOfBlackCheckers = countOf(2) + countOf(32) + countOf(34) + countOf(4);
 	TCHAR string4[] = _T("Кол-во белых шашек: ");
 	TextOut(hdc, 900, 110, (LPCWSTR)string4, _tcslen(string4));
 	//char nnumberPlayer[5];
 	//TCHAR  tnumberPlayer[5];
-	sprintf(nnumberPlayer, "%d", countOf(1) + countOf(31) + countOf(33) + countOf(3));
+	sprintf(nnumberPlayer, "%d", mapp->numberOfWhiteCheckers);
 	OemToChar(nnumberPlayer, tnumberPlayer);
 	TextOut(hdc, 1095, 110, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
 
@@ -593,7 +705,7 @@ void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 	TextOut(hdc, 900, 130, (LPCWSTR)string5, _tcslen(string5));
 	//char nnumberPlayer[5];
 	//TCHAR  tnumberPlayer[5];
-	sprintf(nnumberPlayer, "%d", countOf(2) + countOf(32) + countOf(34) + countOf(4));
+	sprintf(nnumberPlayer, "%d", mapp->numberOfBlackCheckers);
 	OemToChar(nnumberPlayer, tnumberPlayer);
 	TextOut(hdc, 1105, 130, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
 
@@ -619,7 +731,7 @@ void Turning_the_board() {
 
 // конец игры
 int endOfGame() {
-	if (NumberOfFallenBlackCheckers == 13) {
+	if (NumberOfFallenBlackCheckers == 12) {
 		window = 4;
 		statusOfGame = 1;
 		return 1;

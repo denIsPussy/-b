@@ -66,7 +66,10 @@ struct FIELD f = {
        {0, 0, 3, 0, 2, 0, 2, 0},
        {0, 0, 0, 1, 0, 0, 0, 0},
        {0, 0, 0, 0, 0, 0, 0, 0}
-    }
+    },
+    countOf(1) + countOf(31) + countOf(33) + countOf(3),
+    countOf(2) + countOf(32) + countOf(34) + countOf(4),
+    1
 };
 
 // Отправить объявления функций, включенных в этот модуль кода:
@@ -333,6 +336,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 DestroyWindow(hEdt1);
                 fuflo = !fuflo;
             }
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;	
+        case 0x58: 
+            saveGame();
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
+        case 0x4C:
+            loadGame();
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
+        case 0x49:
+            LoadingTheInitialGame();
             InvalidateRect(hWnd, NULL, TRUE);
             break;
         }
