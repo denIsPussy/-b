@@ -12,6 +12,37 @@
 // 44 - клетки, по которым пройдет наша шашка 
 // 55 - клетки, которые предлагаются для хода при выборе шашки
 // 999 - королева
+#define TIME 30
+#define MAX_LEN 100
+
+
+
+#define KEY +3
+
+// Шифрование одной буквы ch ключом KEY
+int encodeChar(int ch) {
+	//char smallLetters[] ="abcdefghijklmnopqrstuvwxyz";
+	//char bigLetters[]   ="ABCDEGGHIJKLMNOPQRSTUVWXYZ";
+
+	int newCh = ch;
+
+	if (ch >= 'A' && ch <= 'Z') {
+		newCh = ch + KEY;
+		if (newCh > 'Z')
+			newCh = 'A' + (newCh - 'Z' - 1);
+	}
+
+	if (ch >= 'a' && ch <= 'z') {
+		newCh = ch + KEY;
+		if (newCh > 'z')
+			newCh = 'a' + (newCh - 'z' - 1);
+	}
+
+	return newCh;
+}
+
+
+
 struct FIELD* mapp = &f;
 int countOfKushats = -1;
 int kushats[20][2];
@@ -90,6 +121,117 @@ void mini_menu(HDC hdc) {
 	//TextOut(hdc, 650, 20, _T("Имя игрока"), 10);
 	//TextOut(hdc, 650, 20, _T("Имя игрока"), 10);
 }
+int decodeChar(int ch) {
+	//char smallLetters[] ="abcdefghijklmnopqrstuvwxyz";
+	//char bigLetters[]   ="ABCDEGGHIJKLMNOPQRSTUVWXYZ";
+
+	int newCh = ch;
+
+	if (ch >= 'A' && ch <= 'Z') {
+		newCh = ch - KEY;
+		if (newCh < 'A')
+			newCh = 'Z' - ('A' - newCh - 1);
+	}
+
+	if (ch >= 'a' && ch <= 'z') {
+		newCh = ch - KEY;
+		if (newCh < 'a')
+			newCh = 'z' - ('a' - newCh - 1);
+	}
+
+	return newCh;
+}
+
+void decodeString2(char* str) {
+
+	while (*str) {
+		*str = decodeChar(*str);
+		++str;
+	}
+}
+void encodeString(char str[]) {
+	int i;
+	for (i = 0; str[i] != '\0'; i++) {
+		str[i] = encodeChar(str[i]);
+	}
+}
+
+void decodeString(char* str) {
+	int i;
+	for (i = 0; str[i] != '\0'; i++) {
+		str[i] = decodeChar(str[i]);
+	}
+}
+
+void LoadRecordsEncoded() {
+	// Открываем файл с рекордами на чтение
+	FILE* fin = fopen("recordsEncoded.txt", "rt");
+	if (fin == NULL) {
+		// выходим, не загрузив рекорды из файла
+		return;
+	}
+	char str[MAX_LEN];
+
+	fgets(str, MAX_LEN - 1, fin);
+	decodeString(str);
+	sscanf(str, "%d", &numRecords);
+	int i;
+	for (i = 0; i < numRecords; i++) {
+		// сохраняем в файле каждое поле каждого рекорда
+		fgets(str, MAX_LEN - 1, fin);
+		decodeString2(str);
+
+		sscanf(str, "%s%d%d%d%d%d%d%d%d\n",
+			records[i].name,
+			&records[i].winCount,
+			&records[i].lossCount,
+			&records[i].year,
+			&records[i].month,
+			&records[i].day,
+			&records[i].hour,
+			&records[i].minute,
+			&records[i].second
+		);
+	}
+	// закрываем файл
+	fclose(fin);
+}
+
+void SaveRecordsEncoded() {
+	// Запись в выходной файл
+	FILE* fout = fopen("recordsEncoded.txt", "wt");
+	if (fout == NULL) {
+		// выходим, не сохранив результаты в файл
+		return;
+	}
+
+	char str[MAX_LEN];
+	sprintf(str, "%d\n", numRecords);
+	encodeString(str);
+	fprintf(fout, "%s", str);
+
+	int i;
+	for (i = 0; i < numRecords; i++) {
+		// сохраняем в файле каждое поле каждого рекорда
+		sprintf(str, "%s %d %d %d %d %d %d %d %d\n",
+			records[i].name,
+			records[i].winCount,
+			records[i].lossCount,
+			records[i].year,
+			records[i].month,
+			records[i].day,
+			records[i].hour,
+			records[i].minute,
+			records[i].second
+		);
+		encodeString(str);
+		fprintf(fout, "%s", str);
+	}
+	// закрываем файл
+	fclose(fout);
+}
+
+
 
 int countOfCheckers(int i) {
 	if (i == 1) return countOf(1) + countOf(31) + countOf(33) + countOf(3);
@@ -174,7 +316,7 @@ void loadGame() {
 
 
 void LoadingTheInitialGame() {
-	FILE* Load = fopen("load.txt", "rt");
+	FILE* Load = fopen("load1.txt", "rt");
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			fscanf(Load, "%d ", &mapp->map[i][j]);
@@ -538,7 +680,7 @@ bool poedanie() {
 
 
 // действия при нажитии левой кнопки мыши
-void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
+void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam, HWND hWnd) {
 
 	int* currentCell = &mapp->map[y][x];
 
@@ -569,7 +711,7 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 			//addRecord(str2);
 			return;
 		}
-		else Turning_the_board();
+		else Turning_the_board(hWnd);
 		/*else {
 			statusOfGame = 1;
 			window = 3;
@@ -602,7 +744,7 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 			//addRecord(str1);
 			//addRecord(str2);
 			return;
-		}Turning_the_board();
+		}Turning_the_board(hWnd);
 	}
 	else
 	{
@@ -910,7 +1052,7 @@ void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 };
 
 // переворот доски
-void Turning_the_board() {
+void Turning_the_board(HWND hWnd) {
 	int end = 7;
 	int x;
 	for (int begin = 0; begin < 8; begin++) {
@@ -925,6 +1067,9 @@ void Turning_the_board() {
 		}
 
 	}
+	KillTimer(hWnd, 2);
+	SetTimer(hWnd, 2, 1000, 0);
+	timerDigit = 30;
 };
 
 // конец игры
@@ -932,15 +1077,15 @@ int endOfGame() {
 	if (mapp->numberOfBlackCheckers == 0) {
 		window = 1;
 		statusOfGame = 1;
-		InsertRecord(str1, true);
-		InsertRecord(str2, true);
+		InsertRecord(str1, true, 0);
+		//InsertRecord(str2, true);
 		return 1;
 	}
 	else if (mapp->numberOfWhiteCheckers == 0) {
 		statusOfGame = 1;
 		window = 1;
-		InsertRecord(str2, true);
-		InsertRecord(str1, true);
+		InsertRecord(str2, true, 0);
+		//InsertRecord(str1, true);
 		return 2;
 	}
 	else return 0;
@@ -973,7 +1118,7 @@ int CompareRecords(int index1, int index2)
 
 
 int contains(int n, char name[]) {
-	for (int i = 0; i < n - 1; i++) {
+	for (int i = 0; i < n; i++) {
 		if (strcmp(records[i].name, name) == 0) {
 			return i;
 		}
@@ -983,20 +1128,33 @@ int contains(int n, char name[]) {
 
 int number[2];
 
-void InsertRecord(char name[], bool flag)
+void InsertRecord(char name[], bool flag, int temp)
 {
+	if (strcmp(name, "Player 1") == 0) {
+		strcpy(str1, "Noname1");
+	}
+	else if (strcmp(name, "Player 2") == 0) {
+		strcpy(str2, "Noname2");
+	}
+	int xX = contains(numRecords, name);
 	if (!flag) {
-		int x = contains(numRecords, name);
-		if (x == -1)
+		
+		if (xX == -1)
 		{
-			strcpy(records[numRecords].name, name);
-			number[numRecords % 2] = numRecords;
+			if (strcmp(name, "Player 1") == 0) {
+				strcpy(records[numRecords].name, "Noname1");
+			}
+			else if (strcmp(name, "Player 2") == 0) {
+				strcpy(records[numRecords].name, "Noname2");
+			}
+			else strcpy(records[numRecords].name, name);
+			//number[numRecords % 2] = numRecords;
 			records[numRecords].winCount = 0;
 			records[numRecords].lossCount = 0;
 			records[numRecords].numberOfMovesPlayer = 0;
 
 		}
-		else numRecords = x;
+		//else numRecords = x;
 		SYSTEMTIME st;
 		// Получаем текущее время
 		GetLocalTime(&st);
@@ -1012,11 +1170,30 @@ void InsertRecord(char name[], bool flag)
 
 		// Продвигаем запись к началу массива - если в ней 
 		// хороший результат
+		if (numRecords < MAX_NUM_RECORDS && xX == -1)
+			// следующий раз новый рекорд будет занесен в новый элемент
+			numRecords++;
 	}
 	else {
-		records[numRecords].winCount += 1;
-		records[numRecords].lossCount = 0;
-		int i = numRecords;
+		if (mapp->numberOfBlackCheckers == 0) {
+			records[contains(numRecords, str1)].winCount += 1;
+			records[contains(numRecords, str2)].lossCount += 1;
+		}
+		else if (mapp->numberOfWhiteCheckers == 0) {
+			records[contains(numRecords, str2)].winCount += 1;
+			records[contains(numRecords, str1)].lossCount += 1;
+		}
+		else if (temp == 1) {
+			if (mapp->numberPlayer == 1) {
+				records[contains(numRecords, str2)].winCount += 1;
+				records[contains(numRecords, str1)].lossCount += 1;
+			}
+			else if (mapp->numberPlayer == 2) {
+				records[contains(numRecords, str1)].winCount += 1;
+				records[contains(numRecords, str2)].lossCount += 1;
+			}
+		}
+		int i = numRecords - 1;
 		while (i > 0) {
 			if (CompareRecords(i - 1, i) < 0) {
 				struct Record temp = records[i];
@@ -1026,12 +1203,11 @@ void InsertRecord(char name[], bool flag)
 			i--;
 		}
 		// Если таблица заполнена не полностью
-		if (numRecords < MAX_NUM_RECORDS)
-			// следующий раз новый рекорд будет занесен в новый элемент
-			numRecords++;
+		//if (numRecords < MAX_NUM_RECORDS && xX == -1)
+		//	// следующий раз новый рекорд будет занесен в новый элемент
+		//	numRecords++;
 	}
 }
-
 
 
 void DrawRecords(HDC hdc) {
@@ -1043,18 +1219,18 @@ void DrawRecords(HDC hdc) {
 	SelectObject(hdc, hFont);
 	SetTextColor(hdc, RGB(0, 64, 64));
 
-	TCHAR  string1[] = _T("! No ! Дата       ! Время    ! Имя                  ! Победы ! Поражения ! Ходы !");
+	TCHAR  string1[] = _T("! No ! Дата       ! Время    ! Имя                  ! Победы ! Поражения !");
 	TextOut(hdc, 10, 50, (LPCWSTR)string1, _tcslen(string1));
 
 	int i;
 	for (i = 0; i < numRecords; i++) {
 		TCHAR  string2[200];
 		char str[200];
-		sprintf(str, "! %2d ! %02d.%02d.%04d ! %02d:%02d:%02d ! %-20s ! %4d   ! %5d     ! %3d   !",
+		sprintf(str, "! %2d ! %02d.%02d.%04d ! %02d:%02d:%02d ! %-20s ! %4d   !%5d !",
 			i + 1,
 			records[i].day, records[i].month, records[i].year,
 			records[i].hour, records[i].minute, records[i].second,
-			records[i].name, records[i].winCount, records[i].lossCount, records[i].numberOfMovesPlayer
+			records[i].name, records[i].winCount, records[i].lossCount
 		);
 		OemToChar(str, string2);
 		TextOut(hdc, 10, 24 * (i + 1) + 50, (LPCWSTR)string2, _tcslen(string2));
@@ -1062,4 +1238,77 @@ void DrawRecords(HDC hdc) {
 	DeleteObject(hFont);
 }
 
+int massivTimer[31] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+						1 + 10, 2 + 10, 3 + 10, 4 + 10, 5 + 10, 6 + 10, 7 + 10, 8 + 10, 9 + 10, 10 + 10,
+						1 + 20, 2 + 20, 3 + 20, 4 + 20, 5 + 20, 6 + 20, 7 + 20, 8 + 20, 9 + 20, 10 + 20, 31
+};
 
+void Timer() {
+	static int time = TIME;
+
+}
+
+
+
+//char filenameRecords[] = "records.txt";
+
+void SaveRecords() {
+	// Запись в выходной файл
+	FILE* fout = fopen("records.txt", "wt");
+	if (fout == NULL) {
+		// выходим, не сохранив результаты в файл
+		return;
+	}
+
+	fprintf(fout, "%d\n", numRecords);
+
+	int i;
+	for (i = 0; i < numRecords; i++) {
+		// сохраняем в файле каждое поле каждого рекорда
+		fprintf(fout, "%s %d %d %d %d %d %d %d %d\n",
+			records[i].name,
+			records[i].winCount,
+			records[i].lossCount,
+			records[i].year,
+			records[i].month,
+			records[i].day,
+			records[i].hour,
+			records[i].minute,
+			records[i].second
+		);
+
+	}
+
+	// закрываем файл
+	fclose(fout);
+}
+
+void LoadRecords() {
+	// Открываем файл с рекордами на чтение
+	FILE* fout = fopen("records.txt", "rt");
+	if (fout == NULL) {
+		// выходим, не загрузив рекорды из файла
+		return;
+	}
+
+	fscanf(fout, "%d", &numRecords); // количество рекордов в таблице
+
+	int i;
+	for (i = 0; i < numRecords; i++) {
+		// загружаем из файла каждое поле каждого рекорда
+		fscanf(fout, "%s%d%d%d%d%d%d%d%d\n",
+			records[i].name,
+			&records[i].winCount,
+			&records[i].lossCount,
+			&records[i].year,
+			&records[i].month,
+			&records[i].day,
+			&records[i].hour,
+			&records[i].minute,
+			&records[i].second
+		);
+
+	}
+	// закрываем файл
+	fclose(fout);
+}

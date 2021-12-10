@@ -21,11 +21,12 @@ HDC hdc;
 
 const int MAX_NUM_RECORDS = 10;
 int ccc = 0;
+int setTimer = 0;
 bool fuflo = true;
 int* location_of_enemy;
 int hod[2];
 
-
+int timerDigit = 30;
 
 int window = 1; // 1 - главное меню, 2 - сама игра, 3 - окно об окончании игры
 int window_menu = 0; // 0 - нет, 1 - есть
@@ -105,7 +106,7 @@ void RegistrationOfPlayer(HWND hWnd, HINSTANCE hInst, static HWND hEdt1, static 
     static HWND hBtn2;
     static HWND hEdt2;*/
     if (n == 1) {
-        hEdt1 = CreateWindowW(_T("edit"), _T("Игрок 1"),
+        hEdt1 = CreateWindowW(_T("edit"), _T("Player 1"),
             WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 250, 50, 160, 20,
             hWnd, 0, hInst, NULL);
         ShowWindow(hEdt1, SW_SHOWNORMAL);
@@ -117,7 +118,7 @@ void RegistrationOfPlayer(HWND hWnd, HINSTANCE hInst, static HWND hEdt1, static 
         ShowWindow(hBtn1, SW_SHOWNORMAL);
     }
     else if (n == 2) {
-        hEdt2 = CreateWindowW(_T("edit"), _T("Игрок 2"),
+        hEdt2 = CreateWindowW(_T("edit"), _T("Player 2"),
             WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 450, 50, 160, 20,
             hWnd, 0, hInst, NULL);
         ShowWindow(hEdt1, SW_SHOWNORMAL);
@@ -233,6 +234,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     Sleep(2000);
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
+    SetTimer(hWnd, 2, 1000, 0);
 
     return TRUE;
 }
@@ -285,10 +287,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             // добавляем рекорд в таблицу рекордов
             //addRecord(str1); // новый рекорд просто вставляем снизу в таблицу
-            InsertRecord(str1, false); // новый рекорд вставляем в таблицу, сохраняя сортировку
+            InsertRecord(str1, false, 0); // новый рекорд вставляем в таблицу, сохраняя сортировку
             DestroyWindow(hBtn1);
             DestroyWindow(hEdt1);
-            hEdt2 = CreateWindowW(_T("edit"), _T("Игрок 2"),
+            hEdt2 = CreateWindowW(_T("edit"), _T("Player 2"),
                 WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 325, 50, 160, 20,
                 hWnd, 0, hInst, NULL);
             ShowWindow(hEdt1, SW_SHOWNORMAL);
@@ -320,11 +322,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             // добавляем рекорд в таблицу рекордов
             //addRecord(str2); // новый рекорд просто вставляем снизу в таблицу
-            InsertRecord(str2, false); // новый рекорд вставляем в таблицу, сохраняя сортировку
+            InsertRecord(str2, false, 0); // новый рекорд вставляем в таблицу, сохраняя сортировку
 
             DestroyWindow(hBtn2);
             DestroyWindow(hEdt2);
             window = 2;
+            statusOfGame = 0;
             InvalidateRect(hWnd, NULL, TRUE);
             //break;
         }
@@ -365,30 +368,70 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
     case WM_CREATE: // сообщение создания окна
+        /*SetTimer(hWnd, 2, 100, 0);*/
+        LoadRecordsEncoded();
+        
+        break;
+    case WM_TIMER:
+        switch (wParam)
+        {
+        case 2:
 
-        //hInst = ((LPCREATESTRUCT)lParam)->hInstance; // дескриптор приложения
-        //// Создаем и показываем поле редактирования - для ввода имени рекордсмена
-        //hEdt1 = CreateWindowW(_T("edit"), _T("Noname"),
-        //    WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 650, 50, 160, 20,
-        //    hWnd, 0, hInst, NULL);
-        //ShowWindow(hEdt1, SW_SHOWNORMAL);
-
-        //// Создаем и показываем кнопку
-        //hBtn = CreateWindowW(_T("button"), _T("Запомнить!"),
-        //    WS_CHILD | WS_VISIBLE | WS_BORDER,
-        //    650, 100, 160, 20, hWnd, 0, hInst, NULL);
-        //ShowWindow(hBtn, SW_SHOWNORMAL);
-
+            timerDigit--;
+            if (timerDigit == 0) {
+                timerDigit = 30;
+                Turning_the_board(hWnd);
+            }
+            /*HPEN hpen1 = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
+            SelectObject(hdc, hpen1);
+            SetBkMode(hdc, TRANSPARENT);
+            Rectangle(hdc, 387 - 4, 770, 420 - 4, 800);
+            char nNumberOfFallenWhiteCheckers[5];
+            TCHAR  tNumberOfFallenWhiteCheckers[5];
+            sprintf(nNumberOfFallenWhiteCheckers, "%d", timerDigit);
+            OemToChar(nNumberOfFallenWhiteCheckers, tNumberOfFallenWhiteCheckers);
+            TextOut(hdc, 390 - 2, 773, (LPCWSTR)tNumberOfFallenWhiteCheckers, _tcslen(tNumberOfFallenWhiteCheckers));
+            DeleteObject(hpen1);*/
+        
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;
+        }
         break;
     case WM_PAINT:
     {
         PAINTSTRUCT ps;
         hdc = BeginPaint(hWnd, &ps);
         //mini_menu(hdc);
-        if (window == 2) SecondWindow(hdc);
-        else if (window == 1) FirstWindow(hdc, hWnd, hInst);
-        else if (window == 3) DrawRecords(hdc);
+        if (window == 2) {
+            SecondWindow(hdc);
+            if (setTimer == 1) {
+                SetTimer(hWnd, 2, 1000, 0);
+                setTimer = 0;
+            }
+            HPEN hpen1 = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
+            SelectObject(hdc, hpen1);
+            SetBkMode(hdc, TRANSPARENT);
+            Rectangle(hdc, /*387 - 4*/800-37, 770, 800/*420 - 4*/, 800);
+            char nNumberOfFallenWhiteCheckers[5];
+            TCHAR  tNumberOfFallenWhiteCheckers[5];
+            sprintf(nNumberOfFallenWhiteCheckers, "%d", timerDigit);
+            OemToChar(nNumberOfFallenWhiteCheckers, tNumberOfFallenWhiteCheckers);
+            TextOut(hdc, 800-37 + 7, 775, (LPCWSTR)tNumberOfFallenWhiteCheckers, _tcslen(tNumberOfFallenWhiteCheckers));
+            DeleteObject(hpen1);
+        }
+        
+        else if (window == 1) {
+            FirstWindow(hdc, hWnd, hInst);
+            KillTimer(hWnd, 2);
+        }
+        else if (window == 3) {
+            DrawRecords(hdc);
+            KillTimer(hWnd, 2);
+        }
+
         //if (registration == 1) RegistrationOfPlayer(hWnd, hInst);
+
+
         Rectangle(hdc, 770, 0, 800, 20);
         HPEN hpen = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
         SelectObject(hdc, hpen);
@@ -396,7 +439,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         Ellipse(hdc, 770 + 14 - 2, 7, 770 + 14 + 6 - 2, 7 + 6);
         Ellipse(hdc, 770 + 21 - 2, 7, 770 + 21 + 6 - 2, 7 + 6);
         if (window_menu == 1) mini_menu(hdc);
+        
         EndPaint(hWnd, &ps);
+
+
     }
     break;
     case WM_LBUTTONDOWN:
@@ -416,7 +462,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         if (window == 2) {
             
-            if (x >= 310 + 5 && x <= 490 + 5 && y <= 250 + 40 + 30 + 70 && y >= 250 + 40 + 60) {
+            if (x >= 310 + 5 && x <= 490 + 5 && y <= 250 + 40 + 30 + 70 && y >= 250 + 40 + 60 && window_menu == 1) {
                 window_menu = !window_menu;
                 statusOfGame = !statusOfGame;
                 InvalidateRect(hWnd, NULL, TRUE);
@@ -426,6 +472,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 window = 3;
                 window_menu = 0;
                 statusOfGame = 1;
+                InsertRecord(str1, true, 1);
                 InvalidateRect(hWnd, NULL, TRUE);
                 break;
             }
@@ -434,7 +481,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 statusOfGame = 1;
                 window_menu = 0; 
                 registration = 0;
-
+                InsertRecord(str1, true, 1);
                 InvalidateRect(hWnd, NULL, TRUE);
                 break;
             }
@@ -469,7 +516,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 
                 if (registration == 1) {
                     //RegistrationOfPlayer(hWnd, hInst, hEdt1, hBtn1, hBtn2, hEdt2, 1);
-                    hEdt1 = CreateWindowW(_T("edit"), _T("Игрок 1"),
+                    hEdt1 = CreateWindowW(_T("edit"), _T("Player 1"),
                         WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT, 325, 50, 160, 20,
                         hWnd, 0, hInst, NULL);
                     ShowWindow(hEdt1, SW_SHOWNORMAL);
@@ -490,6 +537,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     ShowWindow(hBtn1, SW_SHOWNORMAL);*/
                     if (registration == 0) registration = 1;
                     else registration = 0;
+                    setTimer = 1;
+                    LoadingTheInitialGame();
                     //registration = !registration; 
                 }
                 //registration = !registration;
@@ -514,7 +563,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             if (statusOfGame == 0)
             {
 
-                if (x < 8 && x >= 0 && y < 8 && y >= 0) leftClickingForTheSecondWindow(hdc, lParam);
+                if (x < 8 && x >= 0 && y < 8 && y >= 0) leftClickingForTheSecondWindow(hdc, lParam, hWnd);
             }
         }
         DestroyWindow(hBtn1);
@@ -609,6 +658,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+        SaveRecordsEncoded();
         PostQuitMessage(0);
         break;
     default:
