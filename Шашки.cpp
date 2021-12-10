@@ -234,7 +234,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     Sleep(2000);
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
-    SetTimer(hWnd, 2, 1000, 0);
+    //SetTimer(hWnd, 2, 1000, 0);
 
     return TRUE;
 }
@@ -405,10 +405,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         if (window == 2) {
             SecondWindow(hdc);
-            if (setTimer == 1) {
-                SetTimer(hWnd, 2, 1000, 0);
-                setTimer = 0;
-            }
+            //if (setTimer == 1) {
+                //SetTimer(hWnd, 2, 1000, 0);
+                //setTimer = 0;
+            //}
             HPEN hpen1 = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
             SelectObject(hdc, hpen1);
             //SetBkMode(hdc, TRANSPARENT);
@@ -523,6 +523,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         else if (window == 1) {
+            if (x >= 310 + 5 && x <= 490 + 5 && y <= 250 + 40 + 30 + 70 && y >= 250 + 40 + 60 && window_menu == 1) {
+                window = 1;
+                window_menu = 0;
+                statusOfGame = 1;
+                InvalidateRect(hWnd, NULL, TRUE);
+                break;
+            }
             if (x >= 310 + 5 - 10 && x <= 490 + 5 - 10 + 25 && y <= 250 + 40 + 30 + 70 && y >= 250 + 40 + 60) {
                 
                 if (registration == 1) {
@@ -551,6 +558,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     setTimer = 1;
                     LoadingTheInitialGame();
                     //registration = !registration; 
+                    //window_menu = !window_menu;
                 }
                 //registration = !registration;
                 InvalidateRect(hWnd, NULL, TRUE);
@@ -566,6 +574,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 window_menu = 0;
                 //registration = 0;
             }
+            
 
         }
         x /= 100;

@@ -363,23 +363,32 @@ void movement(bool flag) {
 							if (mapp->map[y - 2][x - 2] == 0) mapp->map[y - 2][x - 2] = 55;
 						}
 					}
-					else {
-						if (x - 2 >= 0 && y - 2 >= 0 && mapp->map[y - 2][x - 2] == 0) {
+					if (x - 2 >= 0 && y - 2 >= 0) {
+						if (mapp->map[y - 2][x - 2] == 0) {
 							if (pawnCheck(mapp->map[y - 1][x - 1])) mapp->map[y - 2][x - 2] = 55;
 						}
-						if (x + 2 <= 7 && y - 2 >= 0 && mapp->map[y - 2][x + 2] == 0) {
+					}
+					if (x + 2 <= 7 && y - 2 >= 0) {
+						if (mapp->map[y - 2][x + 2] == 0) {
 							if (pawnCheck(mapp->map[y - 1][x + 1])) mapp->map[y - 2][x + 2] = 55;
 						}
-						//if (x - 2 >= 0 && y - 2 >= 0 && mapp->map[y - 2][x - 2] == 0) mapp->map[y - 2][x + 2] = 55;
-
 					}
+					//if (x - 2 >= 0 && y - 2 >= 0 && mapp->map[y - 2][x - 2] == 0) mapp->map[y - 2][x + 2] = 55;
+
+					
 
 				}
-				else if (x > 0) {
+				if (x > 0 && y - 1 >= 0) {
 					if (mapp->map[y - 1][x - 1] == 0) mapp->map[y - 1][x - 1] = 55;
+					if (x > 1 && y - 1 >= 0) {
+						if ((mapp->map[y - 1][x - 1] != 0 && mapp->map[y - 1][x - 1] != 55) && mapp->map[y - 2][x - 2] == 0) mapp->map[y - 2][x - 2] = 55;
+					}
 				}
-				if (x < 7) {
+				if (x < 7 && y - 1 >= 0) {
 					if (mapp->map[y - 1][x + 1] == 0) mapp->map[y - 1][x + 1] = 55;
+					if (x < 6 && y - 1 >= 0) {
+						if ((mapp->map[y - 1][x + 1] != 0 && mapp->map[y - 1][x + 1] != 55)&& mapp->map[y - 2][x + 2] == 0) mapp->map[y - 2][x + 2] = 55;
+					}
 				}
 			}
 			if (countOf(mapp->numberPlayer + 2 + 30) != 0) {
@@ -501,14 +510,15 @@ void movementOfQueen() {
 			if (mapp->map[y + kY][x + kX] == 0 && XY != 2)
 			{
 				mapp->map[y + kY][x + kX] = 55;
-				if (x + kX < 7 && y + kY < 7)
+				/*if (x + kX < 7 && y + kY < 7)
 				{
 					if (mapp->map[y + kY + 1][x + kX + 1] != 0) XY++;
-				}
+				}*/
 
 			}
-			else if (pawnCheck(mapp->map[y - kY][x - kX])) XY++;
-			
+			//else if (pawnCheck(mapp->map[y + kY][x + kX])) XY++;
+			else if (mapp->map[y + kY][x + kX] != 0 && XY < 1) XY++;
+			else if (mapp->map[y + kY][x + kX] != 0 && XY == 1) XY = 2;
 			flagXY = false;
 		}
 		if (x + kX < 8 && y - kY >= 0 && Xy != 2)
@@ -516,13 +526,15 @@ void movementOfQueen() {
 			if (mapp->map[y - kY][x + kX] == 0 && Xy != 2)
 			{
 				mapp->map[y - kY][x + kX] = 55;
-				if (x + kX < 7 && y - kY >= 1)
+				/*if (x + kX < 7 && y - kY >= 1)
 				{
 					if (mapp->map[y - kY - 1][x + kX + 1] != 0) Xy++;
-				}
+				}*/
 
 			}
-			else if (pawnCheck(mapp->map[y - kY][x - kX])) Xy++;
+			else if (mapp->map[y - kY][x + kX] != 0 && Xy < 1) Xy++;
+			else if (mapp->map[y - kY][x + kX] != 0 && Xy == 1) Xy = 2;
+			//else if (pawnCheck(mapp->map[y - kY][x + kX])) Xy++;
 			flagXy = false;
 		}
 		if (x - kX >= 0 && y + kY < 8 && xY != 2)
@@ -530,13 +542,15 @@ void movementOfQueen() {
 			if (mapp->map[y + kY][x - kX] == 0 && xY != 2)
 			{
 				mapp->map[y + kY][x - kX] = 55;
-				if (x - kX >= 1 && y + kY < 7)
+				/*if (x - kX >= 1 && y + kY < 7)
 				{
 					if (mapp->map[y + kY + 1][x - kX - 1] != 0) xY++;
-				}
+				}*/
 
 			}
-			else if (pawnCheck(mapp->map[y - kY][x - kX])) xY++;
+			//else if (pawnCheck(mapp->map[y + kY][x - kX])) xY++;
+			else if (mapp->map[y + kY][x - kX] != 0 && xY < 1) xY++;
+			else if (mapp->map[y + kY][x - kX] != 0 && xY == 1) xY = 2;
 			
 			flagxY = false;
 		}
@@ -545,14 +559,16 @@ void movementOfQueen() {
 			if (mapp->map[y - kY][x - kX] == 0 && xy != 2)
 			{
 				mapp->map[y - kY][x - kX] = 55;
-				if (x - kX >= 1 && y - kY >= 1)
+				/*if (x - kX >= 1 && y - kY >= 1)
 				{
 					if (mapp->map[y - kY - 1][x - kX - 1] != 0) xy++;
-				}
+				}*/
 
 
 			}
-			else if (pawnCheck(mapp->map[y - kY][x - kX])) xy++;
+			else if (mapp->map[y - kY][x - kX] != 0 && xY < 1) xy++;
+			else if (mapp->map[y - kY][x - kX] != 0 && xY == 1) xy = 2;
+			//else if (pawnCheck(mapp->map[y - kY][x - kX])) xy++;
 			flagxy = false;
 		}
 
@@ -657,6 +673,13 @@ bool poedanie() {
 	location_of_enemy = &mapp->map[Ykletka_of_enemy][Xkletka_of_enemy];
 	bool flaag = true;
 	bool flaggg = true;
+	bool fllag = true;
+	if ((countOf(31) == 1 || countOf(32) == 1)) {
+		if (((y + hod[0]) % 2 == 0) && ((x + hod[1]) % 2 == 0)) fllag = true;
+		else fllag = false;
+	}
+	else if (countOf(33) == 1 || countOf(34) == 1) fllag = true;
+	else fllag = false;
 	if (countOf(mapp->numberPlayer + 30 + 2) == 1) {
 		if (QueenRightChecking(false) != 0) flaggg = true;
 		else flaggg = false;
@@ -665,7 +688,7 @@ bool poedanie() {
 		if (*location_of_enemy != 0) flaggg = true;
 		else flaggg = false;
 	}
-	if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (mapp->map[y][x] == 0) && flaggg /*&& (y + hod[0]) % 2 == 0 && (x + hod[1]) % 2 == 0*/) {
+	if (((x % 2 == 0 && y % 2 == 1) || (x % 2 == 1 && y % 2 == 0)) && (mapp->map[y][x] == 0) && flaggg && fllag){
 		if (countOf(31) == 1 || countOf(32) == 1 || countOf(33) == 1 || countOf(34) == 1) {
 			if (countOfKushats == 0) {
 				if (y <= hod[0]) flaag = true;
@@ -701,10 +724,13 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam, HWND hWnd) {
 	}
 	else if ((countOf(mapp->numberPlayer + 30) == 1 && (*currentCell == mapp->numberPlayer || (*currentCell == (mapp->numberPlayer + 2)))) ||
 			((countOf(mapp->numberPlayer + 30 + 2) == 1 && ((*currentCell == (mapp->numberPlayer + 2) || (*currentCell == (mapp->numberPlayer))))))) {
+			moveCancellation();
 			*currentCell += 30;
 			mapp->map[hod[0]][hod[1]] %= 30;
+			//moveCancellation();
 			movement(true);
 			movement(false);
+			
 	}
 	else if ((countOf(mapp->numberPlayer + 30) == 1 || countOf(mapp->numberPlayer + 30 + 2) == 1) && *currentCell == 44 && y == hod[0] && x == hod[1]) {
 		minusChecker(true);
@@ -771,7 +797,7 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam, HWND hWnd) {
 // первое окно
 void FirstWindow(HDC hdc, HWND hWnd, HINSTANCE hInst) {
 
-	TCHAR  string3[] = _T("ШАХМАТЫ");
+	TCHAR  string3[] = _T("ШАШКИ");
 	TCHAR  string4[] = _T("Scoreboard");
 	TCHAR  string5[] = _T("Exit");
 	TCHAR  string6[] = _T("Start the game");
@@ -816,13 +842,20 @@ void FirstWindow(HDC hdc, HWND hWnd, HINSTANCE hInst) {
 
 // действия при нажитии второй кнопки мыши
 void rightClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
-
+	if (hod[0] == y && hod[1] == x) {
+		moveCancellation();
+		movement(true);
+		return;
+	}
 	if ((countOf(mapp->numberPlayer + 30) == 1 || countOf(mapp->numberPlayer + 30 + 2) == 1) && poedanie()) {
 		mapp->map[y][x] = 44;
 		//*location_of_enemy = 33;
 	}
 	else {
-		mapp->map[hod[0]][hod[1]] %= 30;
+		//mapp->map[hod[0]][hod[1]] %= 30;
+		moveCancellation();
+		movement(true);
+		return;
 	}
 }
 
@@ -857,6 +890,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		SelectObject(hdc, cell_second_player);
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+		DeleteObject(stroke_second_player_cell);
+		DeleteObject(cell_second_player);
 	}
 
 	if (mapp->map[j][i] == 4) {
@@ -865,6 +900,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 		Сrown(hdc, cx, cy, 20, 20, RGB(255, 255, 255));
+		DeleteObject(stroke_second_player_cell);
+		DeleteObject(cell_second_player);
 	}
 
 	else if (mapp->map[j][i] == 1) {  // закрашивание шашки первого игрока
@@ -872,6 +909,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		SelectObject(hdc, cell_first_player);
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+		DeleteObject(stroke_first_player_cell);
+		DeleteObject(cell_first_player);
 	}
 
 	else if (mapp->map[j][i] == 3) {
@@ -880,6 +919,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 		Сrown(hdc, cx, cy, 20, 20, RGB(0, 0, 0));
+		DeleteObject(stroke_first_player_cell);
+		DeleteObject(cell_first_player);
 	}
 
 	if (mapp->map[j][i] == 31) { // закрашивание выделенной шашки первого игрока
@@ -887,6 +928,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		SelectObject(hdc, cell_first_player);
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+		DeleteObject(green_cell);
+		DeleteObject(cell_first_player);
 	}
 	if (mapp->map[j][i] == 33) {
 		SelectObject(hdc, green_cell);
@@ -894,13 +937,16 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 		Сrown(hdc, cx, cy, 20, 20, RGB(0, 0, 0));
-
+		DeleteObject(green_cell);
+		DeleteObject(cell_first_player);
 	}
 	else if (mapp->map[j][i] == 32) {  // закрашивание выделенной шашки второго игрока
 		SelectObject(hdc, green_cell);
 		SelectObject(hdc, cell_second_player);
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+		DeleteObject(green_cell);
+		DeleteObject(cell_second_player);
 	}
 	else if (mapp->map[j][i] == 34) {
 		SelectObject(hdc, green_cell);
@@ -908,17 +954,23 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 		Сrown(hdc, cx, cy, 20, 20, RGB(255, 255, 255));
+		DeleteObject(green_cell);
+		DeleteObject(cell_second_player);
 	}
 	if (mapp->map[j][i] == 44) { // закрашивание шашки при многократном ходе
 		SelectObject(hdc, selected_cells);
 		SelectObject(hdc, H_selected_cells);
 
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
+		DeleteObject(selected_cells);
+		DeleteObject(H_selected_cells);
 	}
 	if (mapp->map[j][i] == 55) {
 		SelectObject(hdc, strokeCell);
 		SelectObject(hdc, black_cage);
 		Rectangle(hdc, cx - 46, cy - 46, cx + 48, cy + 48);
+		DeleteObject(strokeCell);
+		DeleteObject(black_cage);
 	}
 	/*else if (mapp->map[j][i] == 33) {
 		SelectObject(hdc, eatenUp);
@@ -1059,6 +1111,7 @@ void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 	Ellipse(hdc, 770 + 14 - 2, 7, 770 + 14 + 6 - 2, 7 + 6);
 	Ellipse(hdc, 770 + 21 - 2, 7, 770 + 21 + 6 - 2, 7 + 6);
 	if (window_menu == 1) mini_menu(hdc);*/
+	DeleteObject(hFont);
 };
 
 // переворот доски
@@ -1078,7 +1131,7 @@ void Turning_the_board(HWND hWnd) {
 
 	}
 	KillTimer(hWnd, 2);
-	SetTimer(hWnd, 2, 1000, 0);
+	//SetTimer(hWnd, 2, 1000, 0);
 	timerDigit = 30;
 };
 
