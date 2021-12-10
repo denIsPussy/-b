@@ -402,6 +402,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PAINTSTRUCT ps;
         hdc = BeginPaint(hWnd, &ps);
         //mini_menu(hdc);
+
         if (window == 2) {
             SecondWindow(hdc);
             if (setTimer == 1) {
@@ -410,7 +411,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
             HPEN hpen1 = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
             SelectObject(hdc, hpen1);
-            SetBkMode(hdc, TRANSPARENT);
+            //SetBkMode(hdc, TRANSPARENT);
+            HBRUSH hbrush = CreateSolidBrush(RGB(255, 255, 255));
+            SelectObject(hdc, hbrush);
+            SetTextColor(hdc, RGB(0, 0, 0));
             Rectangle(hdc, /*387 - 4*/800-37, 770, 800/*420 - 4*/, 800);
             char nNumberOfFallenWhiteCheckers[5];
             TCHAR  tNumberOfFallenWhiteCheckers[5];
@@ -418,6 +422,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             OemToChar(nNumberOfFallenWhiteCheckers, tNumberOfFallenWhiteCheckers);
             TextOut(hdc, 800-37 + 7, 775, (LPCWSTR)tNumberOfFallenWhiteCheckers, _tcslen(tNumberOfFallenWhiteCheckers));
             DeleteObject(hpen1);
+            DeleteObject(hbrush);
         }
         
         else if (window == 1) {
@@ -432,12 +437,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         //if (registration == 1) RegistrationOfPlayer(hWnd, hInst);
 
 
-        Rectangle(hdc, 770, 0, 800, 20);
+        /*Rectangle(hdc, 770, 0, 800, 20);*/
         HPEN hpen = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
         SelectObject(hdc, hpen);
+        HBRUSH hbrush = CreateSolidBrush(RGB(255, 255, 255));
+        SelectObject(hdc, hbrush);
+        SetTextColor(hdc, RGB(0, 0, 0));
+        Rectangle(hdc, 770, 0, 800, 20);
         Ellipse(hdc, 770 + 7 - 2, 7, 770 + 7 + 6 - 2, 7 + 6);
         Ellipse(hdc, 770 + 14 - 2, 7, 770 + 14 + 6 - 2, 7 + 6);
         Ellipse(hdc, 770 + 21 - 2, 7, 770 + 21 + 6 - 2, 7 + 6);
+        DeleteObject(hbrush);
+        DeleteObject(hpen);
         if (window_menu == 1) mini_menu(hdc);
         
         EndPaint(hWnd, &ps);

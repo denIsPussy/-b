@@ -363,6 +363,16 @@ void movement(bool flag) {
 							if (mapp->map[y - 2][x - 2] == 0) mapp->map[y - 2][x - 2] = 55;
 						}
 					}
+					else {
+						if (x - 2 >= 0 && y - 2 >= 0 && mapp->map[y - 2][x - 2] == 0) {
+							if (pawnCheck(mapp->map[y - 1][x - 1])) mapp->map[y - 2][x - 2] = 55;
+						}
+						if (x + 2 <= 7 && y - 2 >= 0 && mapp->map[y - 2][x + 2] == 0) {
+							if (pawnCheck(mapp->map[y - 1][x + 1])) mapp->map[y - 2][x + 2] = 55;
+						}
+						//if (x - 2 >= 0 && y - 2 >= 0 && mapp->map[y - 2][x - 2] == 0) mapp->map[y - 2][x + 2] = 55;
+
+					}
 
 				}
 				else if (x > 0) {
