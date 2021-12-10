@@ -15,12 +15,85 @@
 struct FIELD* mapp = &f;
 int countOfKushats = -1;
 int kushats[20][2];
-
+struct Record {
+	char name[20];
+	int winCount;
+	int lossCount;
+	int numberOfMovesPlayer;
+	unsigned int year;
+	unsigned int month;
+	unsigned int day;
+	unsigned int hour;
+	unsigned int minute;
+	unsigned int second;
+};
+struct Record records[10 + 1];
 bool pawnCheck(int n) {
 	for (int i = 1; i < 5; i++) {
 		if (n == i) return true;
 	}
 	return false;
+}
+
+void mini_menu(HDC hdc) {
+	HBRUSH hbrush = CreateSolidBrush(RGB(255, 255, 255));
+	SelectObject(hdc, hbrush);
+	if (window == 2) {
+		hbrush = CreateSolidBrush(RGB(206, 104, 38));
+		SelectObject(hdc, hbrush);
+		Rectangle(hdc, 200, 250, 600, 560);
+		DeleteObject(hbrush);
+		hbrush = CreateSolidBrush(RGB(192, 159, 119));
+		SelectObject(hdc, hbrush);
+	}
+	else SelectObject(hdc, hbrush);
+
+	Rectangle(hdc, 200, 250, 600, 560);
+	DeleteObject(hbrush);
+
+	Rectangle(hdc, 310 + 5, 250 + 40 + 60, 490 + 5, 250 + 40 + 30 + 70);
+	Rectangle(hdc, 310 + 5, 250 + 2*40 + 30 + 60, 490 + 5, 250 + 2*40 + 2*30 + 70);
+	Rectangle(hdc, 310 + 5, 250 + 3*40 + 2*30 + 60, 490 + 5, 250 + 3 * 40 + 3 * 30 + 70);
+	if (window == 2) DeleteObject(hbrush);
+	HFONT hFont;
+	SetBkMode(hdc, TRANSPARENT);
+	hFont = CreateFont(50,
+		0, 0, 0, 0, 0, 0, 0,
+		DEFAULT_CHARSET,
+		0, 0, 0, 0,
+		L"Courier New"
+	);
+	SelectObject(hdc, hFont);
+	SetTextColor(hdc, RGB(0, 0, 0));
+	TCHAR  string2[] = _T("MENU");
+	TextOut(hdc, 297 + 50, 270, (LPCWSTR)string2, _tcslen(string2));
+	DeleteObject(hFont);
+
+	
+	TCHAR  string3[] = _T("Continue");
+	TCHAR  string3_1[] = _T("Home");
+	TCHAR  string4[] = _T("Scoreboard");
+	TCHAR  string5[] = _T("Exit");
+	hFont = CreateFont(30,
+		0, 0, 0, 0, 0, 0, 0,
+		DEFAULT_CHARSET,
+		0, 0, 0, 0,
+		L"Courier New"
+	);
+	SelectObject(hdc, hFont);
+	SetTextColor(hdc, RGB(0, 0, 0));
+	if (window != 2) TextOut(hdc, 325 + 18 + 20 + 10, 250 + 40 + 60 + 5, (LPCWSTR)string3_1, _tcslen(string3_1));
+	else TextOut(hdc, 325 + 18, 250 + 40 + 60 + 5, (LPCWSTR)string3, _tcslen(string3));
+	TextOut(hdc, 325, 250 + 2*40 + 60 + 15 + 20, (LPCWSTR)string4, _tcslen(string4));
+	TextOut(hdc, 325 + 18*3, 250 + 3*40 + 2*60 + 5, (LPCWSTR)string5, _tcslen(string5));
+	DeleteObject(hFont);
+	//TextOut(hdc, 650, 20, _T("Имя игрока"), 10);
+	//TextOut(hdc, 650, 20, _T("Имя игрока"), 10);
+}
+
+int countOfCheckers(int i) {
+	if (i == 1) return countOf(1) + countOf(31) + countOf(33) + countOf(3);
+	if (i == 2) return countOf(2) + countOf(32) + countOf(34) + countOf(4);
 }
 
 void Сrown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color) {
@@ -42,7 +115,32 @@ void Сrown(HDC hdc, int cx, int cy, int sizeX, int sizeY, COLORREF color) {
 	Polygon(hdc, p, 8);
 	DeleteObject(hPen);
 }
+void addRecord(char name[])
+{
+	//if (numRecords >= MAX_NUM_RECORDS) {
+	//numRecords = numRecords - 1;
+	//}
 
+	strcpy(records[numRecords].name, name);
+	records[numRecords].winCount = 0;
+	records[numRecords].lossCount = 0;
+	records[numRecords].numberOfMovesPlayer = 0;
+
+	SYSTEMTIME st;
+	// Получаем текущее время
+	GetLocalTime(&st);
+
+	// и разбрасываем его по полям в таблицу рекордов
+	records[numRecords].year = st.wYear;
+	records[numRecords].month = st.wMonth;
+	records[numRecords].day = st.wDay;
+
+	records[numRecords].hour = st.wHour;
+	records[numRecords].minute = st.wMinute;
+	records[numRecords].second = st.wSecond;
+	// Следующий раз будем записывать рекорд в следующий элемент	
+	numRecords++;
+}
 char saveText[] = "C:\\Users\\Movavi\\source\\repos\\шашки\\-b\\save.txt";
 char loadText[] = "C:\\Users\\Movavi\\source\\repos\\шашки\\-b\\save.txt";
 
@@ -463,8 +561,12 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 		else mapp->numberPlayer = 1;
 
 		kushatts();
+		mapp->numberOfBlackCheckers = countOfCheckers(2);
+		mapp->numberOfWhiteCheckers = countOfCheckers(1);
 		int end = endOfGame();
 		if (end == 1 || end == 2) {
+			//addRecord(str1);
+			//addRecord(str2);
 			return;
 		}
 		else Turning_the_board();
@@ -493,8 +595,14 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 		Queen();
 		if (mapp->numberPlayer == 1) mapp->numberPlayer = 2;
 		else mapp->numberPlayer = 1;
-
-		Turning_the_board();
+		mapp->numberOfBlackCheckers = countOfCheckers(2);
+		mapp->numberOfWhiteCheckers = countOfCheckers(1);
+		int end = endOfGame();
+		if(end == 1 || end == 2) {
+			//addRecord(str1);
+			//addRecord(str2);
+			return;
+		}Turning_the_board();
 	}
 	else
 	{
@@ -509,12 +617,50 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
 }
 
 // первое окно
-void FirstWindow(HDC hdc) {
-	HBRUSH firstWindow = CreateSolidBrush(RGB(211, 119, 49));
-	SelectObject(hdc, firstWindow);
-	Rectangle(hdc, 0, 0, 1300, 856);
-	DeleteObject(firstWindow);
+void FirstWindow(HDC hdc, HWND hWnd, HINSTANCE hInst) {
+
+	TCHAR  string3[] = _T("ШАХМАТЫ");
+	TCHAR  string4[] = _T("Scoreboard");
+	TCHAR  string5[] = _T("Exit");
+	TCHAR  string6[] = _T("Start the game");
+	HFONT hFont;
+
+	hFont = CreateFont(100,
+		0, 0, 0, 0, 0, 0, 0,
+		DEFAULT_CHARSET,
+		0, 0, 0, 0,
+		L"Courier New"
+	);
+
+	SelectObject(hdc, hFont);
+	SetTextColor(hdc, RGB(0, 0, 0));
+
+	TextOut(hdc, 210, 200, (LPCWSTR)string3, _tcslen(string3));
+	DeleteObject(hFont);
+
+	Rectangle(hdc, 310 + 5 - 10, 250 + 40 + 60, 490 + 5 - 10 + 25, 250 + 40 + 30 + 70);
+	Rectangle(hdc, 310 + 5 - 10, 250 + 2 * 40 + 30 + 60, 490 + 5 - 10 + 25, 250 + 2 * 40 + 2 * 30 + 70);
+	Rectangle(hdc, 310 + 5 - 10, 250 + 3 * 40 + 2 * 30 + 60, 490 + 5 - 10 + 25, 250 + 3 * 40 + 3 * 30 + 70);
+
+	hFont = CreateFont(25,
+		0, 0, 0, 0, 0, 0, 0,
+		DEFAULT_CHARSET,
+		0, 0, 0, 0,
+		L"Courier New"
+	);
+
+	SelectObject(hdc, hFont);
+
+	TextOut(hdc, 325 - 15, 250 + 40 + 60 + 5, (LPCWSTR)string6, _tcslen(string6));
+	TextOut(hdc, 325 + 8, 250 + 2 * 40 + 60 + 15 + 20, (LPCWSTR)string4, _tcslen(string4));
+	TextOut(hdc, 325 + 18 * 3 - 2, 250 + 3 * 40 + 2 * 60 + 5, (LPCWSTR)string5, _tcslen(string5));
+
+	//TextOut(hdc, 325, 250 + 2 * 40 + 60 + 15 + 20, (LPCWSTR)string4, _tcslen(string4));
+	//TextOut(hdc, 325 + 18 * 3, 250 + 3 * 40 + 2 * 60 + 5, (LPCWSTR)string5, _tcslen(string5));
+	DeleteObject(hFont);
+	//if (registration == 1) RegistrationOfPlayer(hWnd, hInst);
 }
+
 
 // действия при нажитии второй кнопки мыши
 void rightClickingForTheSecondWindow(HDC hdc, LPARAM lParam) {
@@ -753,7 +899,14 @@ void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 	sprintf(nnumberPlayer, "%d", mapp->numberOfBlackCheckers);
 	OemToChar(nnumberPlayer, tnumberPlayer);
 	TextOut(hdc, 1105, 130, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
-
+	/*if (window_menu == 1) mini_menu(hdc);*/
+	/*Rectangle(hdc, 770, 0, 800, 20);
+	HPEN hpen = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
+	SelectObject(hdc, hpen);
+	Ellipse(hdc, 770 + 7 - 2, 7, 770 + 7 + 6 - 2, 7 + 6);
+	Ellipse(hdc, 770 + 14 - 2, 7, 770 + 14 + 6 - 2, 7 + 6);
+	Ellipse(hdc, 770 + 21 - 2, 7, 770 + 21 + 6 - 2, 7 + 6);
+	if (window_menu == 1) mini_menu(hdc);*/
 };
 
 // переворот доски
@@ -776,15 +929,137 @@ void Turning_the_board() {
 
 // конец игры
 int endOfGame() {
-	if (NumberOfFallenBlackCheckers == 12) {
-		window = 4;
+	if (mapp->numberOfBlackCheckers == 0) {
+		window = 1;
 		statusOfGame = 1;
+		InsertRecord(str1, true);
+		InsertRecord(str2, true);
 		return 1;
 	}
-	else if (NumberOfFallenWhiteCheckers == 12) {
+	else if (mapp->numberOfWhiteCheckers == 0) {
 		statusOfGame = 1;
-		window = 4;
+		window = 1;
+		InsertRecord(str2, true);
+		InsertRecord(str1, true);
 		return 2;
 	}
 	else return 0;
 }
+
+
+
+
+
+int CompareRecords(int index1, int index2)
+{
+	if (records[index1].winCount < records[index2].winCount)
+		return -1;
+	if (records[index1].winCount > records[index2].winCount)
+		return +1;
+
+	// if (records[index1].gold == records[index2].gold) {
+
+	if (records[index1].lossCount > records[index2].lossCount)
+		return -1;
+	if (records[index1].lossCount < records[index2].lossCount)
+		return +1;
+
+	//   if (records[index1].steps == records[index2].steps) {
+	return 0;
+	//    } 
+	//  }
+
+}
+
+
+int contains(int n, char name[]) {
+	for (int i = 0; i < n - 1; i++) {
+		if (strcmp(records[i].name, name) == 0) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+int number[2];
+
+void InsertRecord(char name[], bool flag)
+{
+	if (!flag) {
+		int x = contains(numRecords, name);
+		if (x == -1)
+		{
+			strcpy(records[numRecords].name, name);
+			number[numRecords % 2] = numRecords;
+			records[numRecords].winCount = 0;
+			records[numRecords].lossCount = 0;
+			records[numRecords].numberOfMovesPlayer = 0;
+
+		}
+		else numRecords = x;
+		SYSTEMTIME st;
+		// Получаем текущее время
+		GetLocalTime(&st);
+
+		// и разбрасываем его по полям в таблицу рекордов
+		records[numRecords].year = st.wYear;
+		records[numRecords].month = st.wMonth;
+		records[numRecords].day = st.wDay;
+
+		records[numRecords].hour = st.wHour;
+		records[numRecords].minute = st.wMinute;
+		records[numRecords].second = st.wSecond;
+
+		// Продвигаем запись к началу массива - если в ней 
+		// хороший результат
+	}
+	else {
+		records[numRecords].winCount += 1;
+		records[numRecords].lossCount = 0;
+		int i = numRecords;
+		while (i > 0) {
+			if (CompareRecords(i - 1, i) < 0) {
+				struct Record temp = records[i];
+				records[i] = records[i - 1];
+				records[i - 1] = temp;
+			}
+			i--;
+		}
+		// Если таблица заполнена не полностью
+		if (numRecords < MAX_NUM_RECORDS)
+			// следующий раз новый рекорд будет занесен в новый элемент
+			numRecords++;
+	}
+}
+
+
+
+void DrawRecords(HDC hdc) {
+	HFONT hFont;
+	hFont = CreateFont(16, 0, 0, 0, 0, 0, 0, 0,
+		DEFAULT_CHARSET, 0, 0, 0, 0,
+		L"Courier New"
+	);
+	SelectObject(hdc, hFont);
+	SetTextColor(hdc, RGB(0, 64, 64));
+
+	TCHAR  string1[] = _T("! No ! Дата       ! Время    ! Имя                  ! Победы ! Поражения ! Ходы !");
+	TextOut(hdc, 10, 50, (LPCWSTR)string1, _tcslen(string1));
+
+	int i;
+	for (i = 0; i < numRecords; i++) {
+		TCHAR  string2[200];
+		char str[200];
+		sprintf(str, "! %2d ! %02d.%02d.%04d ! %02d:%02d:%02d ! %-20s ! %4d   ! %5d     ! %3d   !",
+			i + 1,
+			records[i].day, records[i].month, records[i].year,
+			records[i].hour, records[i].minute, records[i].second,
+			records[i].name, records[i].winCount, records[i].lossCount, records[i].numberOfMovesPlayer
+		);
+		OemToChar(str, string2);
+		TextOut(hdc, 10, 24 * (i + 1) + 50, (LPCWSTR)string2, _tcslen(string2));
+	}
+	DeleteObject(hFont);
+}
+
+
