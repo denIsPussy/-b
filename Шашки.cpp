@@ -99,7 +99,12 @@ struct FIELD f = {
     countOf(2) + countOf(32) + countOf(34) + countOf(4),
     1
 };
-
+struct FIELD* mapp1 = &f;
+void test(HWND hWnd) {
+    if (mapp1->map[5][4] == 1) mapp1->map[5][4] = 31;
+    else mapp1->map[5][4] = 31;
+    InvalidateRect(hWnd, NULL, TRUE);
+}
 void RegistrationOfPlayer(HWND hWnd, HINSTANCE hInst, static HWND hEdt1, static HWND hBtn1, static HWND hBtn2, static HWND hEdt2, int n) {
     /*static HWND hBtn1;
     static HWND hEdt1;
@@ -369,13 +374,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
     case WM_CREATE: // сообщение создания окна
-        /*SetTimer(hWnd, 2, 100, 0);*/
+        //SetTimer(hWnd, 2, 1000, 0);
         LoadRecordsEncoded();
         
         break;
     case WM_TIMER:
         switch (wParam)
         {
+        /*case 0:
+            test(hWnd);
+            InvalidateRect(hWnd, NULL, TRUE);
+            break;*/
         case 2:
 
             timerDigit--;
@@ -383,7 +392,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 timerDigit = 30;
                 Turning_the_board(hWnd);
             }
-            /*HPEN hpen1 = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
+            HPEN hpen1 = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
             SelectObject(hdc, hpen1);
             SetBkMode(hdc, TRANSPARENT);
             Rectangle(hdc, 387 - 4, 770, 420 - 4, 800);
@@ -392,7 +401,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             sprintf(nNumberOfFallenWhiteCheckers, "%d", timerDigit);
             OemToChar(nNumberOfFallenWhiteCheckers, tNumberOfFallenWhiteCheckers);
             TextOut(hdc, 390 - 2, 773, (LPCWSTR)tNumberOfFallenWhiteCheckers, _tcslen(tNumberOfFallenWhiteCheckers));
-            DeleteObject(hpen1);*/
+            DeleteObject(hpen1);
         
             InvalidateRect(hWnd, NULL, TRUE);
             break;
@@ -406,10 +415,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
         if (window == 2) {
             SecondWindow(hdc);
-            //if (setTimer == 1) {
+            if (setTimer == 1) {
                 //SetTimer(hWnd, 2, 1000, 0);
-                //setTimer = 0;
-            //}
+                setTimer = 0;
+            }
             HPEN hpen1 = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
             SelectObject(hdc, hpen1);
             //SetBkMode(hdc, TRANSPARENT);
@@ -471,6 +480,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             InvalidateRect(hWnd, NULL, TRUE);
             break;
         }
+        //else {
+        //    window_menu = 0;
+        //    //statusOfGame = !statusOfGame;
+        //    InvalidateRect(hWnd, NULL, TRUE);
+        //    //break;
+        //}
 
         if (window == 2) {
             
@@ -501,7 +516,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         else if (window == 3) {
             if (x >= 310 + 5 && x <= 490 + 5 && y <= 250 + 40 + 30 + 70 && y >= 250 + 40 + 60) {
                 window = 1;
-                window_menu = !window_menu;
+                window_menu = 0;
                 statusOfGame = 1;
                 InvalidateRect(hWnd, NULL, TRUE);
                 break;
@@ -517,8 +532,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 window = 1;
                 statusOfGame = 1;
                 window_menu = 0;
-                registration = 0;
-
+                //registration = 0;
+                statusOfGame = 1;
                 InvalidateRect(hWnd, NULL, TRUE);
                 break;
             }

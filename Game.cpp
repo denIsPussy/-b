@@ -427,7 +427,7 @@ int QueenRightChecking(bool fufka) {
 	secondX = x;
 	firstY = hod[0];
 	firstX = hod[1];
-	if (abs(secondY - firstY) != (secondX - firstX)) return 0;
+	if (abs(secondY - firstY) != abs(secondX - firstX)) return 0;
 	if (hod[0] < y && hod[1] < x) {
 		kY = 1;
 		kX = 1;
@@ -672,8 +672,8 @@ bool poedanie() {
 	int Xkletka_of_enemy = abs(x + hod[1]) / 2;
 	location_of_enemy = &mapp->map[Ykletka_of_enemy][Xkletka_of_enemy];
 	bool flaag = true;
-	bool flaggg = true;
-	bool fllag = true;
+	bool flaggg = false;
+	bool fllag = false;
 	if ((countOf(31) == 1 || countOf(32) == 1)) {
 		if (((y + hod[0]) % 2 == 0) && ((x + hod[1]) % 2 == 0)) fllag = true;
 		else fllag = false;
@@ -681,7 +681,7 @@ bool poedanie() {
 	else if (countOf(33) == 1 || countOf(34) == 1) fllag = true;
 	else fllag = false;
 	if (countOf(mapp->numberPlayer + 30 + 2) == 1) {
-		if (QueenRightChecking(false) != 0) flaggg = true;
+		if (QueenRightChecking(false) == 1) flaggg = true;
 		else flaggg = false;
 	}
 	else {
@@ -797,7 +797,7 @@ void leftClickingForTheSecondWindow(HDC hdc, LPARAM lParam, HWND hWnd) {
 // первое окно
 void FirstWindow(HDC hdc, HWND hWnd, HINSTANCE hInst) {
 
-	TCHAR  string3[] = _T("ШАШКИ");
+	TCHAR  string3[] = _T("Checkers");
 	TCHAR  string4[] = _T("Scoreboard");
 	TCHAR  string5[] = _T("Exit");
 	TCHAR  string6[] = _T("Start the game");
@@ -864,28 +864,30 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 
 	HBRUSH cell_first_player, cell_second_player, H_selected_cells, white_cage, black_cage;
 
-	cell_second_player = CreateSolidBrush(RGB(33, 33, 33)); // цвет шашки первого игрока
-	cell_first_player = CreateSolidBrush(RGB(231, 231, 231)); // цвет шашки второго игрока
-	H_selected_cells = CreateSolidBrush(RGB(205, 133, 63)); // цвет оконтовки шашки при многократном ходе
-	//RGB(15, 46, 66)
-	white_cage = CreateSolidBrush(RGB(231, 187, 154));
-	black_cage = CreateSolidBrush(RGB(126, 56, 3));
+	//cell_second_player = CreateSolidBrush(RGB(33, 33, 33)); // цвет шашки первого игрока
+	//cell_first_player = CreateSolidBrush(RGB(231, 231, 231)); // цвет шашки второго игрока
+	//H_selected_cells = CreateSolidBrush(RGB(205, 133, 63)); // цвет оконтовки шашки при многократном ходе
+	////RGB(15, 46, 66)
+	//white_cage = CreateSolidBrush(RGB(231, 187, 154));
+	//black_cage = CreateSolidBrush(RGB(126, 56, 3));
 
 
 	HPEN stroke_first_player_cell, stroke_second_player_cell, selected_cells, green_cell, strokeCell, eatenUp;
 
-	strokeCell = CreatePen(PS_SOLID, 8, RGB(254, 194, 57));
-	eatenUp = CreatePen(PS_SOLID, 8, RGB(255, 69, 34));
-	selected_cells = CreatePen(PS_SOLID, 8, RGB(205, 133, 63)); // цвет шашки при многократном ходе
-	green_cell = CreatePen(PS_SOLID, 8, RGB(0, 255, 0)); // цвет выделенной ячейки
-	stroke_second_player_cell = CreatePen(PS_SOLID, 8, RGB(0, 0, 0)); // цвет оконтовки шашки второго игрока
-	stroke_first_player_cell = CreatePen(PS_SOLID, 8, RGB(255, 255, 255)); // цвет оконтовки шашки первого игрока
+	//strokeCell = CreatePen(PS_SOLID, 8, RGB(254, 194, 57));
+	//eatenUp = CreatePen(PS_SOLID, 8, RGB(255, 69, 34));
+	//selected_cells = CreatePen(PS_SOLID, 8, RGB(205, 133, 63)); // цвет шашки при многократном ходе
+	//green_cell = CreatePen(PS_SOLID, 8, RGB(0, 255, 0)); // цвет выделенной ячейки
+	//stroke_second_player_cell = CreatePen(PS_SOLID, 8, RGB(0, 0, 0)); // цвет оконтовки шашки второго игрока
+	//stroke_first_player_cell = CreatePen(PS_SOLID, 8, RGB(255, 255, 255)); // цвет оконтовки шашки первого игрока
 
 
 	int cx = (i + 1) * 100 - 50;
 	int cy = (j + 1) * 100 - 50;
 
 	if (mapp->map[j][i] == 2) { // закрашивание шашки второго игрока
+		stroke_second_player_cell = CreatePen(PS_SOLID, 8, RGB(0, 0, 0)); // цвет оконтовки шашки второго игрока
+		cell_second_player = CreateSolidBrush(RGB(33, 33, 33)); // цвет шашки первого игрока
 		SelectObject(hdc, stroke_second_player_cell);
 		SelectObject(hdc, cell_second_player);
 
@@ -895,6 +897,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 	}
 
 	if (mapp->map[j][i] == 4) {
+		stroke_second_player_cell = CreatePen(PS_SOLID, 8, RGB(0, 0, 0)); // цвет оконтовки шашки второго игрока
+		cell_second_player = CreateSolidBrush(RGB(33, 33, 33)); // цвет шашки первого игрока
 		SelectObject(hdc, stroke_second_player_cell);
 		SelectObject(hdc, cell_second_player);
 
@@ -905,6 +909,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 	}
 
 	else if (mapp->map[j][i] == 1) {  // закрашивание шашки первого игрока
+		cell_first_player = CreateSolidBrush(RGB(231, 231, 231)); // цвет шашки второго игрока
+		stroke_first_player_cell = CreatePen(PS_SOLID, 8, RGB(255, 255, 255)); // цвет оконтовки шашки первого игрока
 		SelectObject(hdc, stroke_first_player_cell);
 		SelectObject(hdc, cell_first_player);
 
@@ -914,6 +920,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 	}
 
 	else if (mapp->map[j][i] == 3) {
+		cell_first_player = CreateSolidBrush(RGB(231, 231, 231)); // цвет шашки второго игрока
+		stroke_first_player_cell = CreatePen(PS_SOLID, 8, RGB(255, 255, 255)); // цвет оконтовки шашки первого игрока
 		SelectObject(hdc, stroke_first_player_cell);
 		SelectObject(hdc, cell_first_player);
 
@@ -924,6 +932,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 	}
 
 	if (mapp->map[j][i] == 31) { // закрашивание выделенной шашки первого игрока
+		green_cell = CreatePen(PS_SOLID, 8, RGB(0, 255, 0)); // цвет выделенной ячейки
+		cell_first_player = CreateSolidBrush(RGB(231, 231, 231)); // цвет шашки второго игрока
 		SelectObject(hdc, green_cell);
 		SelectObject(hdc, cell_first_player);
 
@@ -932,6 +942,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		DeleteObject(cell_first_player);
 	}
 	if (mapp->map[j][i] == 33) {
+		green_cell = CreatePen(PS_SOLID, 8, RGB(0, 255, 0)); // цвет выделенной ячейки
+		cell_first_player = CreateSolidBrush(RGB(231, 231, 231)); // цвет шашки второго игрока
 		SelectObject(hdc, green_cell);
 		SelectObject(hdc, cell_first_player);
 
@@ -941,6 +953,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		DeleteObject(cell_first_player);
 	}
 	else if (mapp->map[j][i] == 32) {  // закрашивание выделенной шашки второго игрока
+		green_cell = CreatePen(PS_SOLID, 8, RGB(0, 255, 0)); // цвет выделенной ячейки
+		cell_second_player = CreateSolidBrush(RGB(33, 33, 33)); // цвет шашки первого игрока
 		SelectObject(hdc, green_cell);
 		SelectObject(hdc, cell_second_player);
 
@@ -949,6 +963,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		DeleteObject(cell_second_player);
 	}
 	else if (mapp->map[j][i] == 34) {
+		green_cell = CreatePen(PS_SOLID, 8, RGB(0, 255, 0)); // цвет выделенной ячейки
+		cell_second_player = CreateSolidBrush(RGB(33, 33, 33)); // цвет шашки первого игрока
 		SelectObject(hdc, green_cell);
 		SelectObject(hdc, cell_second_player);
 
@@ -958,6 +974,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		DeleteObject(cell_second_player);
 	}
 	if (mapp->map[j][i] == 44) { // закрашивание шашки при многократном ходе
+		H_selected_cells = CreateSolidBrush(RGB(205, 133, 63)); // цвет оконтовки шашки при многократном ходе
+		selected_cells = CreatePen(PS_SOLID, 8, RGB(205, 133, 63)); // цвет шашки при многократном ходе
 		SelectObject(hdc, selected_cells);
 		SelectObject(hdc, H_selected_cells);
 
@@ -966,6 +984,8 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		DeleteObject(H_selected_cells);
 	}
 	if (mapp->map[j][i] == 55) {
+		strokeCell = CreatePen(PS_SOLID, 8, RGB(254, 194, 57));
+		black_cage = CreateSolidBrush(RGB(126, 56, 3));
 		SelectObject(hdc, strokeCell);
 		SelectObject(hdc, black_cage);
 		Rectangle(hdc, cx - 46, cy - 46, cx + 48, cy + 48);
@@ -979,7 +999,7 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 		Ellipse(hdc, cx - 40, cy - 40, cx + 40, cy + 40);
 	}*/
 
-	DeleteObject(cell_first_player);
+	/*DeleteObject(cell_first_player);
 	DeleteObject(cell_second_player);
 	DeleteObject(H_selected_cells);
 	DeleteObject(selected_cells);
@@ -988,7 +1008,7 @@ void shading_the_checkers(HDC hdc, int j, int i) {
 	DeleteObject(stroke_second_player_cell);
 	DeleteObject(strokeCell);
 	DeleteObject(white_cage);
-	DeleteObject(black_cage);
+	DeleteObject(black_cage);*/
 };
 
 // второе окно
@@ -1034,7 +1054,10 @@ void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 		x = 0;
 
 	}
-
+	DeleteObject(H_black_cage);
+	DeleteObject(black_cage);
+	DeleteObject(white_cage);
+	DeleteObject(H_white_cage);
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 
@@ -1043,66 +1066,66 @@ void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 		}
 	}
 
-	DeleteObject(H_black_cage);
+	/*DeleteObject(H_black_cage);
 	DeleteObject(black_cage);
 	DeleteObject(white_cage);
-	DeleteObject(H_white_cage);
+	DeleteObject(H_white_cage);*/
 
-	HFONT hFont;
-	hFont = CreateFont(20,
-		0, 0, 0, 0, 0, 0, 0,
-		DEFAULT_CHARSET,
-		0, 0, 0, 0,
-		L"Courier New"
-	);
-	SelectObject(hdc, hFont);
-	SetTextColor(hdc, RGB(0, 128, 128));
+	//HFONT hFont;
+	//hFont = CreateFont(20,
+	//	0, 0, 0, 0, 0, 0, 0,
+	//	DEFAULT_CHARSET,
+	//	0, 0, 0, 0,
+	//	L"Courier New"
+	//);
+	//SelectObject(hdc, hFont);
+	//SetTextColor(hdc, RGB(0, 128, 128));
 
-	TCHAR  string1[] = _T("Потеряно белых шашек: ");
-	TCHAR  string2[] = _T("Потеряно черных шашек: ");
-	TextOut(hdc, 900, 50, (LPCWSTR)string1, _tcslen(string1));
-	TextOut(hdc, 900, 70, (LPCWSTR)string2, _tcslen(string2));
-	char nNumberOfFallenWhiteCheckers[5];
-	TCHAR  tNumberOfFallenWhiteCheckers[5];
-	sprintf(nNumberOfFallenWhiteCheckers, "%d", NumberOfFallenWhiteCheckers);
-	OemToChar(nNumberOfFallenWhiteCheckers, tNumberOfFallenWhiteCheckers);
-	TextOut(hdc, 1115, 50, (LPCWSTR)tNumberOfFallenWhiteCheckers, _tcslen(tNumberOfFallenWhiteCheckers));
-
-
-	char nNumberOfFallenBlackCheckers[5];
-	TCHAR  tNumberOfFallenBlackCheckers[5];
-	sprintf(nNumberOfFallenBlackCheckers, "%d", NumberOfFallenBlackCheckers);
-	OemToChar(nNumberOfFallenBlackCheckers, tNumberOfFallenBlackCheckers);
-	TextOut(hdc, 1125, 70, (LPCWSTR)tNumberOfFallenBlackCheckers, _tcslen(tNumberOfFallenBlackCheckers));
-
-	int xxx = countOf(1) + countOf(31);
-	TCHAR string3[] = _T("Игрок, который сейчас ходит: ");
-	TextOut(hdc, 900, 90, (LPCWSTR)string3, _tcslen(string3));
-	char nnumberPlayer[5];
-	TCHAR  tnumberPlayer[5];
-	sprintf(nnumberPlayer, "%d", mapp->numberPlayer);
-	OemToChar(nnumberPlayer, tnumberPlayer);
-	TextOut(hdc, 1185, 90, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
+	//TCHAR  string1[] = _T("Потеряно белых шашек: ");
+	//TCHAR  string2[] = _T("Потеряно черных шашек: ");
+	//TextOut(hdc, 900, 50, (LPCWSTR)string1, _tcslen(string1));
+	//TextOut(hdc, 900, 70, (LPCWSTR)string2, _tcslen(string2));
+	//char nNumberOfFallenWhiteCheckers[5];
+	//TCHAR  tNumberOfFallenWhiteCheckers[5];
+	//sprintf(nNumberOfFallenWhiteCheckers, "%d", NumberOfFallenWhiteCheckers);
+	//OemToChar(nNumberOfFallenWhiteCheckers, tNumberOfFallenWhiteCheckers);
+	//TextOut(hdc, 1115, 50, (LPCWSTR)tNumberOfFallenWhiteCheckers, _tcslen(tNumberOfFallenWhiteCheckers));
 
 
-	mapp->numberOfWhiteCheckers = countOf(1) + countOf(31) + countOf(33) + countOf(3);
-	mapp->numberOfBlackCheckers = countOf(2) + countOf(32) + countOf(34) + countOf(4);
-	TCHAR string4[] = _T("Кол-во белых шашек: ");
-	TextOut(hdc, 900, 110, (LPCWSTR)string4, _tcslen(string4));
+	//char nNumberOfFallenBlackCheckers[5];
+	//TCHAR  tNumberOfFallenBlackCheckers[5];
+	//sprintf(nNumberOfFallenBlackCheckers, "%d", NumberOfFallenBlackCheckers);
+	//OemToChar(nNumberOfFallenBlackCheckers, tNumberOfFallenBlackCheckers);
+	//TextOut(hdc, 1125, 70, (LPCWSTR)tNumberOfFallenBlackCheckers, _tcslen(tNumberOfFallenBlackCheckers));
+
+	//int xxx = countOf(1) + countOf(31);
+	//TCHAR string3[] = _T("Игрок, который сейчас ходит: ");
+	//TextOut(hdc, 900, 90, (LPCWSTR)string3, _tcslen(string3));
 	//char nnumberPlayer[5];
 	//TCHAR  tnumberPlayer[5];
-	sprintf(nnumberPlayer, "%d", mapp->numberOfWhiteCheckers);
-	OemToChar(nnumberPlayer, tnumberPlayer);
-	TextOut(hdc, 1095, 110, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
+	//sprintf(nnumberPlayer, "%d", mapp->numberPlayer);
+	//OemToChar(nnumberPlayer, tnumberPlayer);
+	//TextOut(hdc, 1185, 90, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
 
 
-	TCHAR string5[] = _T("Кол-во черных шашек: ");
-	TextOut(hdc, 900, 130, (LPCWSTR)string5, _tcslen(string5));
-	//char nnumberPlayer[5];
-	//TCHAR  tnumberPlayer[5];
-	sprintf(nnumberPlayer, "%d", mapp->numberOfBlackCheckers);
-	OemToChar(nnumberPlayer, tnumberPlayer);
-	TextOut(hdc, 1105, 130, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
+	//mapp->numberOfWhiteCheckers = countOf(1) + countOf(31) + countOf(33) + countOf(3);
+	//mapp->numberOfBlackCheckers = countOf(2) + countOf(32) + countOf(34) + countOf(4);
+	//TCHAR string4[] = _T("Кол-во белых шашек: ");
+	//TextOut(hdc, 900, 110, (LPCWSTR)string4, _tcslen(string4));
+	////char nnumberPlayer[5];
+	////TCHAR  tnumberPlayer[5];
+	//sprintf(nnumberPlayer, "%d", mapp->numberOfWhiteCheckers);
+	//OemToChar(nnumberPlayer, tnumberPlayer);
+	//TextOut(hdc, 1095, 110, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
+
+
+	//TCHAR string5[] = _T("Кол-во черных шашек: ");
+	//TextOut(hdc, 900, 130, (LPCWSTR)string5, _tcslen(string5));
+	////char nnumberPlayer[5];
+	////TCHAR  tnumberPlayer[5];
+	//sprintf(nnumberPlayer, "%d", mapp->numberOfBlackCheckers);
+	//OemToChar(nnumberPlayer, tnumberPlayer);
+	//TextOut(hdc, 1105, 130, (LPCWSTR)tnumberPlayer, _tcslen(tnumberPlayer));
 	/*if (window_menu == 1) mini_menu(hdc);*/
 	/*Rectangle(hdc, 770, 0, 800, 20);
 	HPEN hpen = CreatePen(PS_SOLID, 2, RGB(0, 0, 0));
@@ -1111,7 +1134,7 @@ void SecondWindow(HDC hdc) { // отрисовка игрового поля в целом
 	Ellipse(hdc, 770 + 14 - 2, 7, 770 + 14 + 6 - 2, 7 + 6);
 	Ellipse(hdc, 770 + 21 - 2, 7, 770 + 21 + 6 - 2, 7 + 6);
 	if (window_menu == 1) mini_menu(hdc);*/
-	DeleteObject(hFont);
+	//DeleteObject(hFont);
 };
 
 // переворот доски
