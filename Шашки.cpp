@@ -507,7 +507,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 window = 1;
                 statusOfGame = 1;
                 window_menu = 0; 
-                registration = 0;
+                registration = 1;
                 InsertRecord(str1, true, 1);
                 InvalidateRect(hWnd, NULL, TRUE);
                 break;
