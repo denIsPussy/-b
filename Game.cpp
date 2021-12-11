@@ -427,7 +427,7 @@ int QueenRightChecking(bool fufka) {
 	secondX = x;
 	firstY = hod[0];
 	firstX = hod[1];
-
+	if (abs(secondY - firstY) != (secondX - firstX)) return 0;
 	if (hod[0] < y && hod[1] < x) {
 		kY = 1;
 		kX = 1;

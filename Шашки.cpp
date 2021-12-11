@@ -328,6 +328,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             DestroyWindow(hEdt2);
             window = 2;
             statusOfGame = 0;
+            window_menu = 0;
             InvalidateRect(hWnd, NULL, TRUE);
             //break;
         }
